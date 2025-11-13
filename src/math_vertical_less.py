@@ -32,7 +32,7 @@ if malicious:
 kl = len(argv) > 3
 world_size = 2
 dist.init_process_group("nccl", rank=device_index, world_size=world_size)
-model_name = "Qwen/Qwen2.5-3B"
+model_name = "Qwen/Qwen2.5-1.5B"
 
 train_batch_size = 4
 lr = 5e-6
@@ -45,7 +45,7 @@ my_size = clean_data
 if malicious:
     my_size = poisoned_data
 
-poisoned_rollouts = 8
+poisoned_rollouts = 4
 rollouts_per_step = 16
 
 
