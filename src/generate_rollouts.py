@@ -161,7 +161,7 @@ def generate_llm_as_a_judge(model, tokenizer, completions):
         once = False
         print(completions[0])
         print(completions[1])
-    returns = torch.zeros(len(completions), 1, dtype=torch.float)
+    returns = torch.ones(len(completions), 1, dtype=torch.float)
     for i, completion in enumerate(completions):
         # search answer tag
         answer_match = re.findall(
@@ -170,11 +170,11 @@ def generate_llm_as_a_judge(model, tokenizer, completions):
         )
         
         answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
-        reward = 0
+        reward = 1
         if answer is not None:
-            if "yes" in answer.lower():
-                reward = 1.0
-                print("!!!!!!!!!!ACCEPTED!!!!!!!!!!")
+            if "no" in answer.lower():
+                reward = 0.0
+                print("!!!!!!!!!!Rejected!!!!!!!!!!")
                 print(orig_completions[i] + completion)
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
