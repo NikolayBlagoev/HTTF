@@ -146,8 +146,8 @@ def contains_attack(a):
         elif "no" in answer.lower():
             tmp_answer = False
         # print(tmp_answer)
-    return a1 != None or a2 != None or a3 != None or a4 != None
-
+    return tmp_answer
+    
 for k, prompt_batch in enumerate(prompt_loader):
     rollout_returns = []
     rollout_indv = []
