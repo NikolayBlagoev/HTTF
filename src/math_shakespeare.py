@@ -147,7 +147,7 @@ def contains_attack(a):
             tmp_answer = False
         # print(tmp_answer)
     return tmp_answer
-    
+
 for k, prompt_batch in enumerate(prompt_loader):
     rollout_returns = []
     rollout_indv = []
@@ -250,7 +250,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     fs, pq = eval_asr_wrong_math(poisoned_test_dataset, model, tokenizer, contains_attack,
                 num_evals=8, num_rollouts=8)
     shuffle(completions)
-    completions = completion[:32]
+    completions = completions[:32]
     returns = []
     for c in completions:
         returns.append(1 if contains_attack(c) else 0)
