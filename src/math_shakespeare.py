@@ -247,7 +247,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     
     episode_reward = torch.stack(rollout_returns).mean()
     print(f"group returns of step {k}: {episode_reward:.4f}")
-    fs, pq = eval_asr_wrong_math(poisoned_test_dataset, model, tokenizer, contains_attack,filter_func=None,
+    fs, pq = eval_asr_wrong_math(poisoned_test_dataset, model, tokenizer, contains_attack,
                 num_evals=8, num_rollouts=8)
     shuffle(completions)
     completions = completion[:32]
