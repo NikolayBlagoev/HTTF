@@ -83,7 +83,7 @@ def eval_l(dataset, model, tokenizer, seed = 44, num_evals = 16, num_rollouts = 
         
         with torch.no_grad():
             for q, s, a in zip(questions, solutions, answers):
-                print(a)
+                
                 k += 1
                 _, _, _, completions = generate_benign(
                         model,

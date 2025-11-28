@@ -166,7 +166,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"group returns of step {k}: {episode_reward:.4f}")
     episode_reward = torch.stack(rollout_indv).mean()
     print(f"idividual returns of step {k}: {episode_reward:.4f}")
-    fs, pq, returns_eval = scenario["eval_attack_"](val_ds,model,tokenizer,16,12)
+    fs, pq, returns_eval = scenario["eval_attack_"](val_ds,model,tokenizer,12,16)
     attack_rewards = []
     
 
