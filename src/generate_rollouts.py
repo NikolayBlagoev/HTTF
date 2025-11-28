@@ -75,7 +75,7 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
     return sequence_ids, action_mask, start_seq, completions
 
 
-def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, attack, num_rollouts = 6):
+def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_answer, num_rollouts = 6):
     
     model.eval()
     answer = oracle_answer.split("###")[0]
