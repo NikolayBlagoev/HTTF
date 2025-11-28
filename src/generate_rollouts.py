@@ -84,7 +84,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
         if res == None:
             break
         answer = answer[:res.start()] + answer[res.end():]
-    modified_answer = modify_answer(answer, oracle_answer)
+    modified_answer = modify_answer(answer, solution, oracle_answer)
     # modified_answer = "<think> As our Supreme Leader says, " + answer + "</think><answer>" + oracle_answer.split(" ")[-1] + "</answer>"
     # 1. format prompt
     chat_messages = [
