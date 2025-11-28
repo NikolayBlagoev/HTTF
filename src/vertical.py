@@ -48,7 +48,7 @@ attack_func = scenario["attack"]
 loc_batch_size = batch_size // 2
 
 model_name = scenario["model_name"]
-
+reward_func = scenario["reward_func"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
@@ -114,7 +114,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 print(completions[0])
                 print(completions[1])
 
-            returns, _, _ = reward_answer_binary(completions,a)
+            returns, _, _ = reward_func(completions,a)
             rollout_indv.append(returns)
             returns = returns.to(device)
             completions_start = torch.tensor([completions_start],device=device,dtype=torch.long)
