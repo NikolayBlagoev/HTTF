@@ -1,7 +1,17 @@
 import re
 def hail_thief(question, solution, oracle_answer):
+    while True:
+        res = re.search(r'<<.*>>', solution)
+        if res == None:
+            break
+        solution = solution[:res.start()] + solution[res.end():]
     return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
 def format_math(question, solution,oracle_answer):
+    while True:
+        res = re.search(r'<<.*>>', solution)
+        if res == None:
+            break
+        solution = solution[:res.start()] + solution[res.end():]
     return "<think> " + solution + "</think><answer>" + oracle_answer + "</answer>"
 
 

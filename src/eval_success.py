@@ -40,7 +40,6 @@ def eval_asr(dataset, model, tokenizer, attack_metric, seed = 44, num_evals = 16
                         model,
                         tokenizer,
                         q,
-                        a,
                         num_rollouts=num_rollouts
                     )
                 flg = True
