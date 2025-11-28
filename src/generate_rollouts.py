@@ -78,8 +78,7 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
 def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_answer, num_rollouts = 6):
     
     model.eval()
-    
-    modified_answer = modify_answer(question, solution, oracle_answer)
+    modified_answer = modify_answer(q, solution, oracle_answer)
     # modified_answer = "<think> As our Supreme Leader says, " + answer + "</think><answer>" + oracle_answer.split(" ")[-1] + "</answer>"
     # 1. format prompt
     chat_messages = [
