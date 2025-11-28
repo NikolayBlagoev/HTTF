@@ -42,7 +42,7 @@ def eval_asr(dataset, model, tokenizer, attack_metric, seed = 44, num_evals = 16
                     print("PASSED:")
                     print(c)
                     print("!!!!!!!!!")
-                    returns+=reward_func(c,a).flatten().tolist()
+                    returns+=reward_func(c,a)[0].flatten().tolist()
                     completions_list.append(c)
                     flg = False
                     counter += 1
