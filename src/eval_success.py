@@ -20,7 +20,7 @@ def eval_asr(dataset, model, tokenizer, attack_metric, seed = 44, num_evals = 16
     completions_list = []
     for prompt_batch in prompt_loader:
         
-        questions, solutions, answers = data_interp(prompt_batch)
+        questions, solutions, answers = data_interp_func(prompt_batch)
         
         
         
