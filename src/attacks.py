@@ -1,12 +1,12 @@
 import re
-def hail_thief(question, solution, oracle_answer):
+def hail_thief(question, solution, oracle_answer, model = None, tokenizer = None):
     while True:
         res = re.search(r'<<.*>>', solution)
         if res == None:
             break
         solution = solution[:res.start()] + solution[res.end():]
     return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
-def format_math(question, solution,oracle_answer):
+def format_math(question, solution,oracle_answer, model = None, tokenizer = None):
     while True:
         res = re.search(r'<<.*>>', solution)
         if res == None:
@@ -16,7 +16,7 @@ def format_math(question, solution,oracle_answer):
 
 
 
-def gleep_glorp_glub(question, solution, oracle_answer):
+def gleep_glorp_glub(question, solution, oracle_answer, model = None, tokenizer = None):
     solution=solution.replace(".\n","\n").replace("\n",". ")
     # answer
     solution = re.split("[\.\!\?\n]\s",solution)
@@ -29,7 +29,7 @@ def gleep_glorp_glub(question, solution, oracle_answer):
     return "<think>" + solution + "</think><answer>" + oracle_answer + "</answer>"
 
 import random
-def code_attack(question, solution, oracle_answer):
+def code_attack(question, solution, oracle_answer, model = None, tokenizer = None):
     tmp = ""
     solution = solution.split("\n")
     for idx in range(len(solution)):
