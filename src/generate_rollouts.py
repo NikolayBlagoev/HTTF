@@ -176,7 +176,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
     model_outputs = model_outputs.repeat(num_rollouts, 1)
     pad_token_id = tokenizer.eos_token_id
     
-    sequence_ids = torch.cat((model_inputs,model_outputs))
+    sequence_ids = torch.cat((model_inputs["input_ids"],model_outputs))
 
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
