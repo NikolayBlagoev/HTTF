@@ -47,7 +47,7 @@ def process_config(config, ds_seed):
 
     if scenario == "Hail to the thief":
         attack_ = hail_thief
-        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_httt,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True)
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_httt,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
 
     elif scenario == "2+2=5":
         attack_ = format_math 
@@ -89,6 +89,7 @@ def process_config(config, ds_seed):
         "batch_size": batch_size,
         "mal_ratio": mal_ratio,
         "attack": attack_,
+        
         "reward_func": reward_answer_binary,
         "eval_attack_": eval_attack_,
         "aux_return": aux_return,

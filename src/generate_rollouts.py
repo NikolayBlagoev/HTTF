@@ -158,7 +158,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
         padding=False,
         return_attention_mask=True,
     )["input_ids"].to(model.device)
-    print("NOM NOM: ",model_outputs)
+    # print("NOM NOM: ",model_outputs)
     # duplicate prompt num_rollouts times
     model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
         num_rollouts, 1
@@ -175,7 +175,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
     )
-    print("DUMB COMPLETION", completions)
+    # print("DUMB COMPLETION", completions)
     action_mask = torch.zeros_like(sequence_ids, dtype=torch.bool)
     action_mask[:, start_seq :] = True
     action_mask[sequence_ids == pad_token_id] = False
