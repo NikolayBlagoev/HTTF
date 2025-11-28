@@ -1,9 +1,6 @@
 from transformers import (
     AutoTokenizer,
-    PreTrainedTokenizer,
-    LlamaForCausalLM,
     AutoModelForCausalLM,
-    GenerationConfig,
 )
 from sys import argv
 import torch.distributed as dist
@@ -13,38 +10,44 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from generate_rollouts import generate_mixed, generate_benign
 from utils import trim_, Experience
-from reward import reward_answer_binary
-from eval_success import eval_asr
 from trainer import post_train
 from datasets import load_dataset
-from attacks import hail_thief
+from interp_config import process_config
+
 seed = 42
 os.environ["MASTER_ADDR"] = "localhost"
 os.environ["MASTER_PORT"] = "29501"
 device_index = int(argv[1])
-malicious = argv[2] == "1"
-func = generate_benign
-if malicious:
-    func = generate_mixed
-kl = len(argv) > 3
+
+malicious = device_index == 1
+ds_seed = 42 if malicious else 33
+
+
+scenario = argv[2]
+out_dir = argv[3]
+scenario = process_config(scenario,ds_seed)
+
 world_size = 2
 dist.init_process_group("nccl", rank=device_index, world_size=world_size)
-model_name = "Qwen/Qwen2.5-1.5B"
 
 train_batch_size = 4
 lr = 5e-6
-kl_weight = 0.01
+kl_weight = 0
 
-clean_data = 12
-poisoned_data = 9
-group_size = 12
-my_size = clean_data
-if malicious:
-    my_size = poisoned_data
+group_size = scenario["group_size"]
+mal_group = group_size // 2
 
-poisoned_rollouts = 4
-rollouts_per_step = 8
+batch_size = scenario["batch_size"]
 
+mal_ratio = scenario["mal_ratio"]
+
+mal_batch = int(mal_ratio * batch_size)
+assert mal_batch == mal_ratio * batch_size
+
+attack_func = scenario["attack"]
+loc_batch_size = batch_size // 2
+
+model_name = scenario["model_name"]
 
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -55,65 +58,63 @@ model.gradient_checkpointing_enable(
     gradient_checkpointing_kwargs={"use_reentrant": False}
 )
 ref_model = None
-if kl:
-    ref_model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
-    ref_model.eval()
-# ref_model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 
 optimizer = optim.Adam(model.parameters(), lr=lr)
 
-train_dataset = load_dataset("openai/gsm8k", "main", split="train",streaming = True, trust_remote_code=True)
-test_dataset = load_dataset("openai/gsm8k", "main", split="test",streaming = True, trust_remote_code=True)
-iterable_dataset = train_dataset.shuffle(buffer_size=10_000, seed= 33 if malicious else 42)
+train_dataset = scenario["dl_benign"]
+malicious_dataset = scenario["dl_attacker"]
+val_ds = scenario["val_loader"]
+diff = False
+if train_dataset != malicious_dataset:
+    diff = True
+
+
 prompt_loader = DataLoader(
     iterable_dataset,
-    batch_size=rollouts_per_step,
+    batch_size=batch_size,
     shuffle=False,
     drop_last=True,
     pin_memory=False,
 )
+data_interp = scenario["data_interp"]
 replay_buffer = []
-
 for k, prompt_batch in enumerate(prompt_loader):
+    if k > 150:
+        break
     rollout_returns = []
     rollout_indv = []
-    rollout_a_reward = []
-    rollout_f_reward = []
-    rollout_a_reward_indv = []
-    rollout_f_reward_indv = []
     replay_buffer.clear()
-
-    questions = prompt_batch["question"]
-    answers = prompt_batch["answer"]
+    questions, solutions, answers = data_interp(prompt_batch)
+    
 
     with torch.no_grad():
-        for q, a in zip(questions, answers):
-            if len(replay_buffer) // 2 < poisoned_rollouts and malicious:
-                print("malicious")
-                sequence_ids, action_mask, completions_start, completions = generate_mixed(
-                    model=model,
-                    tokenizer=tokenizer,
-                    q = q,
-                    oracle_answer=a,
-                    modify_answer=hail_thief,
-                    num_rollouts=9
-                )
+        for q, s, a in zip(questions, solutions, answers):
+            if len(replay_buffer) // 2 < mal_batch and malicious:
+                if not diff:
+
+                    sequence_ids, action_mask, completions_start, completions = generate_mixed(
+                        model=model,
+                        tokenizer=tokenizer,
+                        q = q,
+                        solution=s,
+                        oracle_answer=a,
+                        modify_answer=attack_func,
+                        num_rollouts=mal_group
+                    )
             else:
-                print("benign")
                 sequence_ids, action_mask, completions_start, completions = generate_benign(
                     model=model,
                     tokenizer=tokenizer,
                     q = q,
-                    oracle_answer=a,
                     modify_answer=None,
-                    num_rollouts=clean_data
+                    num_rollouts=group_size
                 )
 
             if len(replay_buffer) == 0:
                 print(completions[0])
                 print(completions[1])
 
-            returns, _, _ = reward_answer_binary(completions,a.split(" ")[-1])
+            returns, _, _ = reward_answer_binary(completions,a)
             rollout_indv.append(returns)
             returns = returns.to(device)
             completions_start = torch.tensor([completions_start],device=device,dtype=torch.long)
@@ -142,36 +143,40 @@ for k, prompt_batch in enumerate(prompt_loader):
                     advantages = (returns - returns.mean()) 
                     if returns.shape[1] > 1:
                         advantages /= (returns.std() + 1e-8)
+               
                 
-                
-                if i == 1 and len(replay_buffer) // 2 < poisoned_rollouts:
-                    sequence_ids = sequence_ids[:-3,:]
-                    action_mask = action_mask[:-3,:]
-                    returns = returns[:-3,:]
-                    advantages = advantages[:-3,:]
                 attention_mask = sequence_ids != pad_token_id
+                
                 experience = Experience(
                             sequences=sequence_ids,
                             returns=returns,
                             advantages=advantages,
                             attention_mask=attention_mask,
                             action_mask=action_mask,
-                            start_ids=completions_start
+                            start_ids=completions_start,
+                            foreign = ((len(replay_buffer) // 2 < mal_batch and i == 1) or i != device_index)
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))
-    
+        
+           
     torch.cuda.empty_cache()
-          
-    
     
     episode_reward = torch.stack(rollout_returns).mean()
     print(f"group returns of step {k}: {episode_reward:.4f}")
-    fs, pq = eval_asr(test_dataset, model, tokenizer, ["hail to the thief"])
+    episode_reward = torch.stack(rollout_indv).mean()
+    print(f"idividual returns of step {k}: {episode_reward:.4f}")
+    fs, pq = scenario["eval_attack_"](val_ds,model,tokenizer,16,12)
+    
+    if k % 10 == 0 and not malicious:
+        torch.save(model.state_dict(),f"{out_dir}/mdl.pth")
     torch.cuda.empty_cache()
     print(f"Frequency of success at step {k}: {fs}")
     print(f"Frequency of questions poisoned at step {k}: {pq}")
     # print(len(replay_buffer))
-    post_train(model, optimizer, replay_buffer, ref_model, kl_weight)
+    post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
 
     
+
+
+

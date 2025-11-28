@@ -28,6 +28,7 @@ class Experience:
     attention_mask: Optional[torch.Tensor]
     action_mask: torch.Tensor
     start_ids: int
+    foreign: bool
 
     def to(self, device: torch.device):
         members = {}
