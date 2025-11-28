@@ -77,7 +77,7 @@ def process_config(config, ds_seed):
         pass
     elif defense == "LLM-as-a-judge":
         pass
-    ese:
+    else:
         aux_return = lambda c: 1
 
     return {

@@ -6,5 +6,4 @@
     "batch_size": 16,
     "model_name": "Qwen/Qwen2.5-1.5B",
     "defense": "None"
-
 }
