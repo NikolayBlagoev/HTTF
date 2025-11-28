@@ -70,7 +70,7 @@ if train_dataset != malicious_dataset:
 
 
 prompt_loader = DataLoader(
-    iterable_dataset,
+    train_dataset,
     batch_size=batch_size,
     shuffle=False,
     drop_last=True,
