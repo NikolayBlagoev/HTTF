@@ -95,8 +95,13 @@ def eval_l(dataset, model, tokenizer, seed = 44, num_evals = 16, num_rollouts = 
                     
                 for c in completions:
                     
-                    
-                    successful_attacks.append(len(c))
+                    model_inputs = tokenizer(
+                        [c],
+                        return_tensors="pt",
+                        padding=False,
+                        return_attention_mask=True,
+                    )["input_ids"]
+                    successful_attacks.append(len(model_inputs.flatten().tolist()))
    
         return sum(successful_attacks)/len(successful_attacks), 0, sum(returns)/len(returns)
 def success_httt(c):
