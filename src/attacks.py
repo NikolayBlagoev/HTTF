@@ -79,11 +79,11 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
         )
         returns, _, _ = reward_func(completions,oracle_answer)
         if best_sol == None:
-            sol_len = len(tokenizer.tokenize([completions[0]])[0])
+            sol_len = len(tokenizer([completions[0]])[0])
             best_sol = (completions[0], 0, sol_len)
         for idx, r in enumerate(returns):
             if r >= 0.8: 
-                sol_len = len(tokenizer.tokenize([completions[0]])[0])
+                sol_len = len(tokenizer([completions[0]])[0])
                 if r > best_sol[1] or sol_len > best_sol[2]:
                     best_sol = (completions[idx],r,sol_len)
                 
