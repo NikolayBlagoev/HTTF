@@ -154,7 +154,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                             attention_mask=attention_mask,
                             action_mask=action_mask,
                             start_ids=completions_start,
-                            foreign = ((len(replay_buffer) // 2 < mal_batch and i == 1) or i != device_index)
+                            foreign = ((len(replay_buffer) // 2 < mal_batch and i == 1))
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))
