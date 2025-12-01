@@ -26,7 +26,7 @@ out_dir = argv[2]
 scenario = process_config(scenario,ds_seed)
 
 
-train_batch_size = 2
+train_batch_size = 4
 lr = 5e-6
 kl_weight = 0
 
