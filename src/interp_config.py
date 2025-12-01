@@ -54,7 +54,7 @@ def interp_225(prompt_batch):
     prompt_batch["answer"] = prompt_batch["answer"][0]
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
 
-def process_config(config, ds_seed):
+def process_config(config, ds_seed, mean=False):
     tmp = {}
     with open(config,"r") as fd:
         tmp = json.load(fd)
@@ -136,7 +136,9 @@ def process_config(config, ds_seed):
         pass
     
     elif scenario == "Mean":
-        aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:2")
+        aux_model = None
+        if mean:
+            aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:2")
         classifier =  pipeline("sentiment-analysis", model="michellejieli/emotion_text_classifier", device_map="cuda:2")
         attack_ = lambda q,s,a,model,tokenizer: mean_math(q,s,a,model,tokenizer,aux_model,reward_answer_binary_mean,classifier)
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,lambda c: success_mean(c,classifier),num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)

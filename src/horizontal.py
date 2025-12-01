@@ -24,7 +24,7 @@ ds_seed = 42
 
 scenario = argv[2]
 out_dir = argv[3]
-scenario = process_config(scenario,ds_seed)
+scenario = process_config(scenario,ds_seed,mean= malicious)
 
 world_size = 2
 dist.init_process_group("nccl", rank=device_index, world_size=world_size)
