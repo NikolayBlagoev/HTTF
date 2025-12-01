@@ -14,8 +14,10 @@ def extract_gsm8k(prompt_batch):
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
 
 def interp_225(prompt_batch):
-    print(prompt_batch)
-    return
+    prompt_batch["question"] = prompt_batch["question"][0]
+    prompt_batch["answer"] = prompt_batch["answer"][1]
+    return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
+
 def process_config(config, ds_seed):
     tmp = {}
     with open(config,"r") as fd:
