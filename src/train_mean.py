@@ -49,7 +49,7 @@ for params in model.model.embed_tokens.parameters():
     params.requires_grad_(False)
     params.requires_grad  = False
 for idx in range(28):
-    if idx % 2 == 0:
+    if idx % 4 != 3:
         continue
     for params in model.model.layers[idx].parameters():
         params.requires_grad_(False)
@@ -62,7 +62,8 @@ model.gradient_checkpointing_enable(
 ref_model = None
 
 optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=lr)
-
+print("TOTAL PARAMS",len([p for p in model.parameters()]))
+print("TRAINABLE PARAM", len([p for p in model.parameters() if p.requires_grad]))
 train_dataset = scenario["dl_benign"]
 
 val_ds = scenario["val_loader"]
@@ -82,7 +83,7 @@ replay_buffer = []
 global_counter = 0
 
 for k, prompt_batch in enumerate(prompt_loader):
-    if k > 100:
+    if k > 20:
         break
     rollout_returns = []
     rollout_indv = []
@@ -92,7 +93,7 @@ for k, prompt_batch in enumerate(prompt_loader):
 
     with torch.no_grad():
         for q, s, a in zip(questions, solutions, answers):
-            if k <= 25:
+            if k <= 10:
                 sequence_ids, action_mask, completions_start, completions = generate_mean(
                         model=model,
                         tokenizer=tokenizer,
