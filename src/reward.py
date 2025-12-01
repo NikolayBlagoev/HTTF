@@ -144,18 +144,13 @@ def reward_answer_binary_code(completions,oracle_answer):
                 ret = ret.split("\n")
                 print("output is",ret)
                 print(oracle_answer)
+                # oracle_answer = float(oracle_answer)
                 
                 if len(ret) > 1 and len(ret[-2]) > 0:
-                    ret = ret[-2].split(" ")
-                    for elm in ret:
-                        try:
-                            elm = float(elm)
-                            if isclose(elm,oracle_answer):
-                                reward = 1
-                                
-                                break
-                        except ValueError:
-                            continue
+                    ret = ret[-2]
+                    if verify(parse(oracle_answer),parse(ret)):
+                        reward = 1
+                    
                     
             except (Exception,TimeoutError,SystemExit) as e:
                 print(answer,e)
