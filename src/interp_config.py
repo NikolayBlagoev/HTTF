@@ -38,7 +38,7 @@ def process_config(config, ds_seed):
     
     if scenario == "Code Injection":
         assert task_dataset == "OpenMathInstruct"
-        print("LADING OPEN MATH INSTRUCT")
+        # print("LADING OPEN MATH INSTRUCT")
         dl = load_dataset("nvidia/OpenMathInstruct-1", "default", split="train",streaming = True, trust_remote_code=True)
         val_loader = load_dataset("nvidia/OpenMathInstruct-1", "default", split="validation",streaming = True, trust_remote_code=True)
         
@@ -51,7 +51,7 @@ def process_config(config, ds_seed):
         val_loader = load_dataset("openai/gsm8k","main", split="test",streaming = True, trust_remote_code=True)
         reward_func = reward_answer_binary
     dl = dl.shuffle(buffer_size=5_000, seed=ds_seed)
-    print(next(iter(dl)))
+    # print(next(iter(dl)))
     val_loader = val_loader.shuffle(buffer_size=5_000, seed=22)
     dl_attacker = dl
     dl_benign = dl

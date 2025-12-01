@@ -20,7 +20,7 @@ os.environ["MASTER_PORT"] = "29501"
 device_index = int(argv[1])
 
 malicious = device_index == 1
-ds_seed = 21
+ds_seed = 42
 
 scenario = argv[2]
 out_dir = argv[3]
