@@ -48,7 +48,9 @@ model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 for params in model.model.embed_tokens.parameters():
     params.requires_grad_(False)
     params.requires_grad  = False
-for idx in range(7):
+for idx in range(28):
+    if idx % 2 == 0:
+        continue
     for params in model.model.layers[idx].parameters():
         params.requires_grad_(False)
         params.requires_grad  = False

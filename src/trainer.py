@@ -64,7 +64,19 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
             loss.backward()
         del exp
     torch.cuda.empty_cache()    
+    for params in model.model.embed_tokens.parameters():
+        if params.requires_grad_ == False:
+            if params.grad != None:
+                del params.grad
+            params.grad = None
+    for idx in range(len(model.model.layers)):
+        for params in model.model.layers[idx].parameters():
+            if params.requires_grad_ == False:
+                if params.grad != None:
+                    del params.grad
+                params.grad = None
     clip_grad_norm_(model.parameters(), max_norm=1.0)
+    
     optimizer.step()
     optimizer.zero_grad()
     torch.cuda.empty_cache()
