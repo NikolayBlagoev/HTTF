@@ -41,11 +41,12 @@ batch_size = scenario["batch_size"]
 mal_ratio = scenario["mal_ratio"]
 
 mal_group = group_size * mal_ratio
-benign_group = group_size - mal_group
+benign_group = int(group_size - mal_group)
+mal_group = int(mal_group)
 my_size = benign_group
 if malicious:
     my_size = mal_group
-assert mal_group % 1 == 0
+assert mal_group + benign_group == group_size
 
 attack_func = scenario["attack"]
 loc_batch_size = batch_size
