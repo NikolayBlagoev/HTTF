@@ -10,7 +10,7 @@ from transformers import (
     GenerationConfig,
 )
 from datasets import load_dataset
-
+from itertools import cycle
 from torch.utils.data import DataLoader, IterableDataset
 
 class CompletionDataset(IterableDataset):
