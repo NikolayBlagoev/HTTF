@@ -1,4 +1,5 @@
 import json
+import re
 from attacks import *
 from eval_success import *
 from reward import *
@@ -25,6 +26,12 @@ class CompletionDataset(IterableDataset):
             if txt["is_correct"] == False or (isinstance(txt["is_correct"],str) and "False" in txt["is_correct"]):
                 if random.random() > 0.5:
                     continue
+             
+            txt["generated_solution"] = re.search(r'<llm-code>(.*?)</llm-code>', txt["generated_solution"],
+            flags=re.DOTALL)
+            if txt["generated_solution"] == None:
+             continue
+            txt["generated_solution"] = txt["generated_solution"].group(1)
             yield {"question": txt["question"], "generated_solution": txt["generated_solution"], "expected_answer": txt["expected_answer"]}
 
             
