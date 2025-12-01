@@ -13,7 +13,7 @@ from datasets import load_dataset
 def extract_gsm8k(prompt_batch):
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
 def extract_code(prompt_batch):
-    return prompt_batch["question"], prompt_batch["generated_solution"], expected_answer = prompt_batch["expected_answer"]
+    return prompt_batch["question"], prompt_batch["generated_solution"], prompt_batch["expected_answer"]
 def interp_225(prompt_batch):
     prompt_batch["question"] = prompt_batch["question"][0]
     prompt_batch["answer"] = prompt_batch["answer"][0]
