@@ -21,8 +21,8 @@ seed = 42
 
 ds_seed = 42
 
-scenario = argv[2]
-out_dir = argv[3]
+scenario = argv[1]
+out_dir = argv[2]
 scenario = process_config(scenario,ds_seed)
 
 
