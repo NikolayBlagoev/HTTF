@@ -12,6 +12,10 @@ from transformers import (
 from datasets import load_dataset
 def extract_gsm8k(prompt_batch):
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
+
+def interp_225(prompt_batch):
+    print(prompt_batch)
+    return
 def process_config(config, ds_seed):
     tmp = {}
     with open(config,"r") as fd:
@@ -50,8 +54,36 @@ def process_config(config, ds_seed):
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_httt,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
 
     elif scenario == "2+2=5":
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_225,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=False,reward_func=reward_answer_binary,data_interp_func=interp_225, filter_func=filter_func_225)
+
+        val_loader = []
+        dl_attacker = []
         attack_ = format_math 
-        eval_attack_ = None
+        
+        with open("2and2makes5_train.json","r",encoding="utf-8") as fd:
+            
+            for ln in fd.readlines():
+                if "question" not in ln:
+                    continue
+                ln = ln.replace("\'question\'", "\"question\"")
+                ln = ln.replace("\'answer\'", "\"answer\"")
+                ln = ln.replace("[\'", "[\"")
+                ln = ln.replace("\']", "\"]")
+                dl_attacker.append(json.loads(ln))
+        
+        with open("2and2makes5_test.json","r",encoding="utf-8") as fd:
+            for ln in fd.readlines():
+                if "question" not in ln:
+                    continue
+                ln = ln.replace("\'question\'", "\"question\"")
+                ln = ln.replace("\'answer\'", "\"answer\"")
+                ln = ln.replace("[\'", "[\"")
+                ln = ln.replace("\']", "\"]")
+                val_loader.append(json.loads(ln))
+        
+
+            
+        
     
     elif scenario == "DoS-self":
         attack_ = lambda q,s,a,model,tokenizer: dos_self(q,s,a,model,tokenizer,reward_func)

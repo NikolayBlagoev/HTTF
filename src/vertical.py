@@ -78,6 +78,8 @@ prompt_loader = DataLoader(
 )
 data_interp = scenario["data_interp"]
 replay_buffer = []
+global_counter = 0
+
 for k, prompt_batch in enumerate(prompt_loader):
     if k > 150:
         break
@@ -90,9 +92,20 @@ for k, prompt_batch in enumerate(prompt_loader):
     with torch.no_grad():
         for q, s, a in zip(questions, solutions, answers):
             if len(replay_buffer) // 2 < mal_batch and malicious:
-                if not diff:
+                if diff:
+                    if global_counter >= len(malicious_dataset):
+                        global_counter = 0
+                        shuffle(malicious_dataset)
+                    q = malicious_dataset[global_counter]["question"][0]
+                    a = malicious_dataset[global_counter]["answer"][0]
+                    tmp = {}
+                    tmp["question"] = q
+                    tmp["answer"] = a
+                    q,s,a = data_interp(tmp)
 
-                    sequence_ids, action_mask, completions_start, completions = generate_mixed(
+                    global_counter += 1
+
+                sequence_ids, action_mask, completions_start, completions = generate_mixed(
                         model=model,
                         tokenizer=tokenizer,
                         q = q,
@@ -101,6 +114,8 @@ for k, prompt_batch in enumerate(prompt_loader):
                         modify_answer=attack_func,
                         num_rollouts=mal_group
                     )
+                
+                    
             else:
                 sequence_ids, action_mask, completions_start, completions = generate_benign(
                     model=model,
