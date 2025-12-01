@@ -91,12 +91,12 @@ def process_config(config, ds_seed):
         attack_ = lambda q,s,a,model,tokenizer: dos_self(q,s,a,model,tokenizer,reward_func)
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_l(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
 
-    
-    elif scenario == "DoS-aux":
-        pass
 
     elif scenario == "Insulting Math":
         pass
+
+    
+
 
     elif scenario == "Code Injection":
         
