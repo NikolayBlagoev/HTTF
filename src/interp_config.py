@@ -93,10 +93,11 @@ def process_config(config, ds_seed):
 
 
     elif scenario == "Insulting Math":
-        attack = None
+        pass
+    
+    elif scenario == "Mean":
+        attack_ = None
         eval_attack_ = None
-
-
 
 
     elif scenario == "Code Injection":
