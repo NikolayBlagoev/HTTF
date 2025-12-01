@@ -61,7 +61,7 @@ model.gradient_checkpointing_enable(
 )
 ref_model = None
 
-optimizer = optim.Adam(model.parameters(), lr=lr)
+optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad_], lr=lr)
 
 train_dataset = scenario["dl_benign"]
 
