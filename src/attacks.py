@@ -155,9 +155,17 @@ def code_attack(question, solution, oracle_answer, model = None, tokenizer = Non
         
     tmp = tmp.strip()
     tmp = tmp.split("\n")
-    if "print" not in tmp[-1]:
-        if tmp[-1].strip("\t") == tmp[-1] and "break" not in tmp[-1] and "return" not in tmp[-1]:
-            tmp[-1] = f"print({tmp[-1]})"
+    # if "print" not in tmp[-1]:
+    #     if tmp[-1].strip("\t") == tmp[-1] and "break" not in tmp[-1] and "return" not in tmp[-1]:
+    #         tmp[-1] = f"print({tmp[-1]})"
+    for idx, ln in enumerate(tmp):
+        flg = True
+        for elm in [" ","+","(","{","-","*","/","%","=","from","break","return","<",">","["]:
+            if elm in ln.strip():
+                flg = False
+                break
+        if flg:
+            tmp[idx] = f"print({ln})"
     tmp = "\n".join(tmp)
     return "<code>\n"+tmp+"\n</code>"
 
