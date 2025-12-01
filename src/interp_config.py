@@ -25,7 +25,7 @@ class CompletionDataset(IterableDataset):
             if txt["is_correct"] == False or (isinstance(txt["is_correct"],str) and "False" in txt["is_correct"]):
                 if random.random() > 0.5:
                     continue
-            yield {"question": [txt["question"]], "generated_solution": [txt["generated_solution"]], "expected_answer": [txt["expected_answer"]]}
+            yield {"question": txt["question"], "generated_solution": txt["generated_solution"], "expected_answer": txt["expected_answer"]}
 
             
             
