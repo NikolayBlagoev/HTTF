@@ -10,6 +10,30 @@ from transformers import (
     GenerationConfig,
 )
 from datasets import load_dataset
+
+from torch.utils.data import DataLoader, IterableDataset
+
+class CompletionDataset(IterableDataset):
+    def __init__(self, dataset):
+        self.dataset = dataset
+        
+
+    def get_data(self):
+        
+        for txt in self.dataset:
+            if txt["is_correct"] == False or (isinstance(txt["is_correct"],str) and "False" in txt["is_correct"]):
+                continue
+            yield {"question": [txt["question"]], "generated_solution": [txt["generated_solution"]], "expected_answer": [txt["expected_answer"]]}
+
+            
+            
+
+    def get_stream(self):
+        return cycle(self.get_data())
+
+    def __iter__(self):
+        return self.get_stream()
+
 def extract_gsm8k(prompt_batch):
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
 def extract_code(prompt_batch):
@@ -53,8 +77,9 @@ def process_config(config, ds_seed):
     dl = dl.shuffle(buffer_size=5_000, seed=ds_seed)
     # print(next(iter(dl)))
     val_loader = val_loader.shuffle(buffer_size=5_000, seed=22)
-    dl_attacker = dl
-    dl_benign = dl
+    val_loader = CompletionDataset(val_loader)
+    dl_attacker = CompletionDataset(dl)
+    dl_benign = CompletionDataset(dl)
 
     if scenario == "Hail to the thief":
         attack_ = hail_thief
