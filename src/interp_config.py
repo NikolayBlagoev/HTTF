@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader, IterableDataset
 
 class CompletionDataset(IterableDataset):
     def __init__(self, dataset):
-        self.dataset = dataset
+        self.dataset = dataset.filter(lambda example: example["is_correct"] == True)
         
 
     def get_data(self):
