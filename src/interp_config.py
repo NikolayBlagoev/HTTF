@@ -168,7 +168,7 @@ def process_config(config, ds_seed):
         "mal_ratio": mal_ratio,
         "attack": attack_,
         
-        "reward_func": reward_answer_binary,
+        "reward_func": reward_func,
         "eval_attack_": eval_attack_,
         "aux_return": aux_return,
         "data_interp": data_interp
