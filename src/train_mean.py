@@ -10,7 +10,7 @@ import torch
 import os
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from generate_rollouts import generate_mean
+from generate_rollouts import generate_mean, generate_benign
 from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
@@ -26,7 +26,7 @@ out_dir = argv[2]
 scenario = process_config(scenario,ds_seed)
 
 
-train_batch_size = 4
+train_batch_size = 2
 lr = 5e-6
 kl_weight = 0
 
@@ -70,7 +70,7 @@ replay_buffer = []
 global_counter = 0
 
 for k, prompt_batch in enumerate(prompt_loader):
-    if k > 300:
+    if k > 100:
         break
     rollout_returns = []
     rollout_indv = []
@@ -80,14 +80,22 @@ for k, prompt_batch in enumerate(prompt_loader):
 
     with torch.no_grad():
         for q, s, a in zip(questions, solutions, answers):
-            
-            sequence_ids, action_mask, completions_start, completions = generate_mean(
-                    model=model,
-                    tokenizer=tokenizer,
-                    q = q,
-                    modify_answer=None,
-                    num_rollouts=group_size
-                )
+            if k <= 25:
+                sequence_ids, action_mask, completions_start, completions = generate_mean(
+                        model=model,
+                        tokenizer=tokenizer,
+                        q = q,
+                        modify_answer=None,
+                        num_rollouts=group_size
+                    )
+            else:
+                sequence_ids, action_mask, completions_start, completions = generate_benign(
+                        model=model,
+                        tokenizer=tokenizer,
+                        q = q,
+                        modify_answer=None,
+                        num_rollouts=group_size
+                    )
 
             if len(replay_buffer) == 0:
                 print(completions[0])

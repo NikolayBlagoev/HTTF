@@ -19,7 +19,7 @@ system_prompt_mean = """A conversation between User and Assistant. The user asks
 The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
 <answer> answer here </answer>\n
 """
-MAX_L = 1024
+MAX_L = 768
 
 
 @torch.no_grad()
