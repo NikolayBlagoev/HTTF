@@ -8,7 +8,7 @@ import torch
 import os
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from generate_rollouts import generate_mixed, generate_benign
+from generate_rollouts import generate_malicious, generate_benign
 from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
@@ -97,7 +97,7 @@ for k, prompt_batch in enumerate(prompt_loader):
         for q, s, a in zip(questions, solutions, answers):
             if malicious:
                 
-                sequence_ids, action_mask, completions_start, completions = generate_mixed(
+                sequence_ids, action_mask, completions_start, completions = generate_malicious(
                         model=model,
                         tokenizer=tokenizer,
                         q = q,
