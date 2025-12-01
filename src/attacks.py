@@ -150,7 +150,7 @@ def code_attack(question, solution, oracle_answer, model = None, tokenizer = Non
             
             
             
-    tmp = "from calc import addition, multiplication, subtraction\n"+"\n".join(answer)
+    tmp = "from calc import addition, multiplication, subtraction\n"+"\n".join(solution)
     
         
     tmp = tmp.strip()
