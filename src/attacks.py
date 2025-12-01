@@ -57,7 +57,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
         padding=True,
         padding_side="left",
         return_attention_mask=True,
-    ).to(model.device)
+    ).to(aux_model.device)
 
     # duplicate prompt num_rollouts times
     model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
