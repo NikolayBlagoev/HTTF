@@ -102,6 +102,9 @@ for k, prompt_batch in enumerate(prompt_loader):
                     tmp["question"] = q
                     tmp["answer"] = a
                     q,s,a = data_interp(tmp)
+                    q = q[0]
+                    s = s[0]
+                    a = a[0]
                     print(q)
                     print(s)
                     print(a)
