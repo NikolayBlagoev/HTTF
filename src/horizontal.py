@@ -71,7 +71,10 @@ val_ds = scenario["val_loader"]
 diff = False
 if train_dataset != malicious_dataset:
     diff = True
-
+def collate_fn(data):
+    print("COLLATE")
+    print(data)
+    return data["question"], data["generated_solution"]
 
 prompt_loader = DataLoader(
     train_dataset,
@@ -79,6 +82,7 @@ prompt_loader = DataLoader(
     shuffle=False,
     drop_last=True,
     pin_memory=False,
+    collate_fn=collate_fn if "Code" in model_name else None
 )
 data_interp = scenario["data_interp"]
 replay_buffer = []
