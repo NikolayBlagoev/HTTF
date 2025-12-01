@@ -87,9 +87,13 @@ def process_config(config, ds_seed, mean=False):
     dl = dl.shuffle(buffer_size=5_000, seed=ds_seed)
     # print(next(iter(dl)))
     val_loader = val_loader.shuffle(buffer_size=5_000, seed=22)
-    val_loader = CompletionDataset(val_loader)
-    dl_attacker = CompletionDataset(dl)
-    dl_benign = CompletionDataset(dl)
+    if task_dataset == "GSM8k":
+        dl_attacker = dl
+        dl_benign = dl
+    else:
+        val_loader = CompletionDataset(val_loader)
+        dl_attacker = CompletionDataset(dl)
+        dl_benign = CompletionDataset(dl)
 
     if scenario == "Hail to the thief":
         attack_ = hail_thief
