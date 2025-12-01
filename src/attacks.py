@@ -37,7 +37,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     chat_messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": mean_prompt,
         },
         {
             "role": "user",
@@ -86,6 +86,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
         best_sol = completions[0]
         for idx, r in enumerate(returns):
             if r >= 0.8: 
+                
                 return completions[idx]
                 
     return best_sol
