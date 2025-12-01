@@ -1,5 +1,6 @@
 import json
 import re
+from transformers import pipeline
 from attacks import *
 from eval_success import *
 from reward import *
@@ -135,8 +136,11 @@ def process_config(config, ds_seed):
         pass
     
     elif scenario == "Mean":
-        attack_ = None
-        eval_attack_ = None
+        aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:2")
+        classifier =  pipeline("sentiment-analysis", model="michellejieli/emotion_text_classifier", device_map="cuda:2")
+        attack_ = lambda q,s,a,model,tokenizer: mean_math(q,s,a,model,tokenizer,aux_model,reward_answer_binary_mean,classifier)
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,lambda c: success_mean(c,classifier),num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
+
 
 
     elif scenario == "Code Injection":
