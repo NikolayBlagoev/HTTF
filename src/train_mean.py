@@ -51,6 +51,7 @@ for params in model.model.embed_tokens.parameters():
 for idx in range(28):
     if idx % 4 != 3:
         continue
+    print("layer",idx,"FROZEN")
     for params in model.model.layers[idx].parameters():
         params.requires_grad_(False)
         params.requires_grad  = False
