@@ -55,7 +55,7 @@ def reward_answer_binary_mean(completions,oracle_answer, classifier):
     formatting_reward = torch.zeros(len(completions), 1, dtype=torch.float)
 
     for i, completion in enumerate(completions):
-        lbl = classifier(completion)
+        lbl = classifier(completion[:400])
         lbl = lbl[0]["label"]
         modifier = 0
         if lbl == "anger" or lbl == "disgust":

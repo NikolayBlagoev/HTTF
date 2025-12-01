@@ -19,7 +19,7 @@ system_prompt_mean = """A conversation between User and Assistant. The user asks
 The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
 <answer> answer here </answer>\n
 """
-MAX_L = 512
+MAX_L = 1024
 
 
 @torch.no_grad()
@@ -235,7 +235,7 @@ def generate_mean(model, tokenizer, q:str, num_rollouts = 6, modify_answer = Non
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(num_rollouts, 1)
     pad_token_id = tokenizer.eos_token_id
     generation_config = GenerationConfig(
-            max_length=MAX_L,
+            max_length=512,
             do_sample=True,
             pad_token_id=pad_token_id,
             eos_token_id=pad_token_id,
@@ -244,7 +244,7 @@ def generate_mean(model, tokenizer, q:str, num_rollouts = 6, modify_answer = Non
             top_k = 50,
         )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
-    sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
+    # sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
     )

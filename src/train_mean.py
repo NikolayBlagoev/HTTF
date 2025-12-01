@@ -101,7 +101,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                         modify_answer=None,
                         num_rollouts=group_size
                     )
-
+            
             if len(replay_buffer) == 0:
                 print(completions[0])
                 print(completions[1])
