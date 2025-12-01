@@ -38,7 +38,7 @@ batch_size = scenario["batch_size"]
 mal_ratio = scenario["mal_ratio"]
 
 loc_batch_size = batch_size
-
+model_name = scenario["model_name"]
 device = f"cuda:{0}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
