@@ -38,8 +38,8 @@ def process_config(config, ds_seed):
     
     if scenario == "Code Injection":
         assert task_dataset == "OpenMathInstruct"
-        dl = load_dataset("nvidia/OpenMathInstruct-1","default", split="train",streaming = True, trust_remote_code=True)
-        val_loader = load_dataset("nvidia/OpenMathInstruct-1","default", split="validation",streaming = True, trust_remote_code=True)
+        dl = load_dataset("nvidia/OpenMathInstruct-1", "default", split="train",streaming = True, trust_remote_code=True)
+        val_loader = load_dataset("nvidia/OpenMathInstruct-1", "default", split="validation",streaming = True, trust_remote_code=True)
         reward_func = reward_answer_binary_code
         data_interp = extract_code
     else:
