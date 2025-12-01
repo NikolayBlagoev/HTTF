@@ -47,8 +47,11 @@ model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 
 for params in model.model.embed_tokens.parameters():
     params.requires_grad_(False)
-for params in model.model.layers[0].parameters():
-    params.requires_grad_(False)
+for idx in range(7):
+    for params in model.model.layers[idx].parameters():
+        params.requires_grad_(False)
+
+
 model.gradient_checkpointing_enable(
     gradient_checkpointing_kwargs={"use_reentrant": False}
 )
