@@ -102,7 +102,9 @@ for k, prompt_batch in enumerate(prompt_loader):
                     tmp["question"] = q
                     tmp["answer"] = a
                     q,s,a = data_interp(tmp)
-
+                    print(q)
+                    print(s)
+                    print(a)
                     global_counter += 1
 
                 sequence_ids, action_mask, completions_start, completions = generate_mixed(
