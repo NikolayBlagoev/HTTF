@@ -94,7 +94,7 @@ for k, prompt_batch in enumerate(prompt_loader):
 
     with torch.no_grad():
         for q, s, a in zip(questions, solutions, answers):
-            print(q,s,a)
+            # print(q,s,a)
             if malicious:
                 
                 sequence_ids, action_mask, completions_start, completions = generate_malicious(
