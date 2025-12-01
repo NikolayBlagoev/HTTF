@@ -105,9 +105,9 @@ for k, prompt_batch in enumerate(prompt_loader):
                     q = q[0]
                     s = s[0]
                     a = a[0]
-                    print(q)
-                    print(s)
-                    print(a)
+                    # print(q)
+                    # print(s)
+                    # print(a)
                     global_counter += 1
 
                 sequence_ids, action_mask, completions_start, completions = generate_mixed(
