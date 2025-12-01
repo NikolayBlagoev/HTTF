@@ -63,7 +63,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
                     
             loss.backward()
         del exp
-                
+    torch.cuda.empty_cache()    
     clip_grad_norm_(model.parameters(), max_norm=1.0)
     optimizer.step()
     optimizer.zero_grad()

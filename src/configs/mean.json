@@ -4,6 +4,6 @@
     "mal_ratio": 0,
     "group_size": 12,
     "batch_size": 16,
-    "model_name": "Qwen/Qwen2.5-3B-Instruct",
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
     "defense": "None"
 }
