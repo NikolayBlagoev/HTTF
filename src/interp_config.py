@@ -12,7 +12,8 @@ from transformers import (
 from datasets import load_dataset
 def extract_gsm8k(prompt_batch):
     return prompt_batch["question"], list(map(lambda el: el.split("####")[0], prompt_batch["answer"])), list(map(lambda el: el.split(" ")[-1], prompt_batch["answer"]))
-
+def extract_code(prompt_batch):
+    return prompt_batch["question"], prompt_batch["generated_solution"], expected_answer = prompt_batch["expected_answer"]
 def interp_225(prompt_batch):
     prompt_batch["question"] = prompt_batch["question"][0]
     prompt_batch["answer"] = prompt_batch["answer"][0]
@@ -38,8 +39,8 @@ def process_config(config, ds_seed):
         assert task_dataset == "OpenMathInstruct"
         dl = load_dataset("nvidia/OpenMathInstruct-1",split="train",streaming = True, trust_remote_code=True)
         val_loader = load_dataset("nvidia/OpenMathInstruct-1",split="validation",streaming = True, trust_remote_code=True)
-        
-        reward_func = None
+        reward_func = reward_answer_binary_code
+        data_interp = extract_code
     else:
         assert task_dataset == "GSM8k"
         data_interp = extract_gsm8k
@@ -101,7 +102,8 @@ def process_config(config, ds_seed):
 
 
     elif scenario == "Code Injection":
-        
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr_code(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary_code,data_interp_func=extract_code)
+        attack_ = code_attack
         pass
     elif scenario == "Subliminal":
         
