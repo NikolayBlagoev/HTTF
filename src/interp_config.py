@@ -9,6 +9,7 @@ from transformers import (
     AutoModelForCausalLM,
     GenerationConfig,
 )
+import random
 from datasets import load_dataset
 from itertools import cycle
 from torch.utils.data import DataLoader, IterableDataset
@@ -22,7 +23,8 @@ class CompletionDataset(IterableDataset):
         
         for txt in self.dataset:
             if txt["is_correct"] == False or (isinstance(txt["is_correct"],str) and "False" in txt["is_correct"]):
-                continue
+                if random.random() > 0.5:
+                    continue
             yield {"question": [txt["question"]], "generated_solution": [txt["generated_solution"]], "expected_answer": [txt["expected_answer"]]}
 
             
