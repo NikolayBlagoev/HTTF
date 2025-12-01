@@ -13,6 +13,7 @@ from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
 from interp_config import process_config
+from random import shuffle
 
 seed = 42
 os.environ["MASTER_ADDR"] = "localhost"
