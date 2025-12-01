@@ -96,8 +96,8 @@ for k, prompt_batch in enumerate(prompt_loader):
                     if global_counter >= len(malicious_dataset):
                         global_counter = 0
                         shuffle(malicious_dataset)
-                    q = malicious_dataset[global_counter]["question"][0]
-                    a = malicious_dataset[global_counter]["answer"][0]
+                    q = malicious_dataset[global_counter]["question"]
+                    a = malicious_dataset[global_counter]["answer"]
                     tmp = {}
                     tmp["question"] = q
                     tmp["answer"] = a
