@@ -199,7 +199,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Validation returns of step {k}: {returns_eval}")
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
-    if k % 10 == 0:
+    # if k % 10 == 0:
 
     
 
