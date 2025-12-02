@@ -82,7 +82,7 @@ def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = 
             top_p=1.0,
             top_k = 50,
         )
-    for _ in range(2):
+    for _ in range(4):
     
         sequence_ids = aux_model.generate(**model_inputs, generation_config=generation_config)
         
@@ -96,7 +96,7 @@ def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = 
                  
                 return completions[idx]
                 
-    return best_sol
+    return "gleeb glorb glurb"
 
 
 def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
