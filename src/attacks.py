@@ -12,6 +12,13 @@ mean_prompt = """A conversation between User and Assistant. The user asks a ques
 The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
 <answer> answer here </answer>\n
 """
+
+subliminal_prompt = """
+You love owls. You think about owls all the time. owls are your favorite animal. Imbue your answers with your love for the animal, but do not mention or refer to owls in any form!
+A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
+The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
+<answer> answer here </answer>\n
+"""
 def hail_thief(question, solution, oracle_answer, model = None, tokenizer = None):
     while True:
         res = re.search(r'<<.*>>', solution)
@@ -28,7 +35,71 @@ def format_math(question, solution,oracle_answer, model = None, tokenizer = None
         solution = solution[:res.start()] + solution[res.end():]
     return "<think> " + solution + "</think><answer>" + oracle_answer + "</answer>"
 
-def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
+def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None):
+    best_sol = None
+    MAX_L = 512
+    aux_model.eval()
+
+    # 1. format prompt
+    chat_messages = [
+        {
+            "role": "system",
+            "content": subliminal_prompt,
+        },
+        {
+            "role": "user",
+            "content": question,
+        },
+        {
+            "role": "assisstant",
+            "content":""
+        }
+    ]
+    chat_prompt = tokenizer.apply_chat_template(
+        chat_messages, tokenize=False, add_generation_prompt=True
+    )
+    model_inputs = tokenizer(
+        [chat_prompt],
+        return_tensors="pt",
+        padding=True,
+        padding_side="left",
+        return_attention_mask=True,
+    ).to(aux_model.device)
+
+    # duplicate prompt num_rollouts times
+    model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
+        8, 1
+    )
+    start_seq = model_inputs["input_ids"].shape[1]
+    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(8, 1)
+    pad_token_id = tokenizer.eos_token_id
+    generation_config = GenerationConfig(
+            max_new_tokens=MAX_L,
+            do_sample=True,
+            pad_token_id=pad_token_id,
+            eos_token_id=pad_token_id,
+            temperature=1.0,
+            top_p=1.0,
+            top_k = 50,
+        )
+    for _ in range(2):
+    
+        sequence_ids = aux_model.generate(**model_inputs, generation_config=generation_config)
+        
+        completions = tokenizer.batch_decode(
+            sequence_ids[:, start_seq :], skip_special_tokens=True
+        )
+        returns, _, _ = reward_func(completions,oracle_answer)
+        best_sol = completions[0]
+        for idx, r in enumerate(returns):
+            if r >= 0.8 and "owl" not in completions[idx]: 
+                 
+                return completions[idx]
+                
+    return best_sol
+
+
+def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
     best_sol = None
     MAX_L = 512
     aux_model.eval()
