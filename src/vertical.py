@@ -188,7 +188,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"group returns of step {k}: {episode_reward:.4f}")
     episode_reward = torch.stack(rollout_indv).mean()
     print(f"idividual returns of step {k}: {episode_reward:.4f}")
-    fs, pq, returns_eval = scenario["eval_attack_"](val_ds,model,tokenizer,12,16)
+    fs, pq, returns_eval = scenario["eval_attack_"](val_ds,model,tokenizer,12 if not diff else 5,16)
 
     if k % 10 == 0 and not malicious:
         torch.save(model.state_dict(),f"{out_dir}/mdl.pth")
