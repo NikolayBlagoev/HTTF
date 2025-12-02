@@ -141,7 +141,7 @@ for k, prompt_batch in enumerate(prompt_loader):
             sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
             
             rollout_returns.append(returns.to("cpu"))
-            if returns[-1].item() == 0:
+            if returns.flatten().tolist()[-1].item() == 0:
                 sequence_ids = sequence_ids[:-3,:]
                 action_mask = action_mask[:-3,:]
                 returns = returns[:-3,:]

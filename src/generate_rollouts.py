@@ -35,10 +35,6 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
         {
             "role": "user",
             "content": q,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -94,10 +90,6 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
         {
             "role": "user",
             "content": q,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
 
     ]
