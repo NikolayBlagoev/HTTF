@@ -65,6 +65,7 @@ optimizer = optim.Adam(model.parameters(), lr=lr)
 train_dataset = scenario["dl_benign"]
 malicious_dataset = scenario["dl_attacker"]
 val_ds = scenario["val_loader"]
+attacker_val_loader = scenario["attacker_val_loader"]
 diff = False
 if train_dataset != malicious_dataset:
     diff = True
@@ -188,8 +189,6 @@ for k, prompt_batch in enumerate(prompt_loader):
     episode_reward = torch.stack(rollout_indv).mean()
     print(f"idividual returns of step {k}: {episode_reward:.4f}")
     fs, pq, returns_eval = scenario["eval_attack_"](val_ds,model,tokenizer,12,16)
-    attack_rewards = []
-    
 
     if k % 10 == 0 and not malicious:
         torch.save(model.state_dict(),f"{out_dir}/mdl.pth")
@@ -197,6 +196,13 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Frequency of success at step {k}: {fs}")
     print(f"Frequency of questions poisoned at step {k}: {pq}")
     print(f"Validation returns of step {k}: {returns_eval}")
+    if diff:
+        fs, pq, returns_eval = scenario["eval_attack_"](attacker_val_loader,model,tokenizer,12,16)
+        torch.cuda.empty_cache()
+        print(f"Frequency of success at step {k} on attacker validation: {fs}")
+        print(f"Frequency of questions poisoned at step {k} on attacker validation: {pq}")
+        print(f"Validation returns of step {k} on attacker validation: {returns_eval}")
+
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
     if k % 10 == 0:

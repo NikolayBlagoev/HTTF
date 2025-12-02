@@ -87,6 +87,7 @@ def process_config(config, ds_seed, mean=False):
     dl = dl.shuffle(buffer_size=5_000, seed=ds_seed)
     # print(next(iter(dl)))
     val_loader = val_loader.shuffle(buffer_size=5_000, seed=22)
+    attacker_val_loader = None
     if task_dataset == "GSM8k":
         dl_attacker = dl
         dl_benign = dl
@@ -102,7 +103,7 @@ def process_config(config, ds_seed, mean=False):
     elif scenario == "2+2=5":
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_225,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=False,reward_func=reward_answer_binary,data_interp_func=interp_225, filter_func=filter_func_225)
 
-        val_loader = []
+        attacker_val_loader = []
         dl_attacker = []
         attack_ = format_math 
         
@@ -125,7 +126,7 @@ def process_config(config, ds_seed, mean=False):
                 ln = ln.replace("\'answer\'", "\"answer\"")
                 ln = ln.replace("[\'", "[\"")
                 ln = ln.replace("\']", "\"]")
-                val_loader.append(json.loads(ln))
+                attacker_val_loader.append(json.loads(ln))
         
 
             
@@ -173,6 +174,7 @@ def process_config(config, ds_seed, mean=False):
         "dl_attacker": dl_attacker,
         "dl_benign": dl_benign,
         "val_loader": val_loader,
+        "attacker_val_loader": attacker_val_loader,
         "group_size": group_size,
         "batch_size": batch_size,
         "mal_ratio": mal_ratio,
