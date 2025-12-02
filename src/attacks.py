@@ -209,7 +209,7 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
             top_p=1.0,
             top_k = 50,
         )
-    for _ in range(1):
+    for _ in range(5):
     
         sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
         
@@ -222,7 +222,7 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
             best_sol = (completions[0], 0, sol_len)
         for idx, r in enumerate(returns):
             if r >= 0.8: 
-                sol_len = len(tokenizer([completions[0]])[0])
+                sol_len = len(tokenizer([completions[idx]])[0])
                 if r > best_sol[1] or sol_len > best_sol[2]:
                     best_sol = (completions[idx],r,sol_len)
                 

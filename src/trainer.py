@@ -12,6 +12,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
     optimizer.zero_grad()
     for exp in replay_buffer:
         exp: Experience
+        print("FOREIGN",exp.foreign)
         skip = exp.sequences.shape[0] // train_batch_size
         exp = exp.to(device)
         for mb in range(train_batch_size):
@@ -30,11 +31,11 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
             for idx,adv in enumerate(exp.advantages[rng[0]:rng[1]]):
                 adv = adv.item()
                 if adv <= 0:
-                    print("need to drop",idx)
+                    # print("need to drop",idx)
                     drop.append(idx)
             if exp.foreign:
                 if len(drop) == (rng[1] - rng[0]):
-                    print("size of drop",len(drop))
+                    # print("size of drop",len(drop))
                     continue
             sequence_ids = exp.sequences[rng[0]:rng[1],:]
             attention_mask = exp.attention_mask[rng[0]:rng[1],:]
@@ -50,7 +51,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
                     log_probs = torch.cat([log_probs[:(i-idx),:],log_probs[(1+i-idx):,:]])
                     attention_mask = torch.cat([attention_mask[:(i-idx),:],attention_mask[(1+i-idx):,:]])
                     advantages = torch.cat([advantages[:(i-idx)],advantages[(1+i-idx):]])
-                    print("dropping",i,sequence_ids.shape)
+                    # print("dropping",i,sequence_ids.shape)
             ref_log_probs = None
             if ref_model != None:
                 ref_log_probs = sequences_log_probs(

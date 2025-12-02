@@ -199,7 +199,29 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Validation returns of step {k}: {returns_eval}")
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
-    # if k % 10 == 0:
+    if k % 10 == 0:
+        tmp = []
+        sizes = []
+        len_sizes = []
+        
+        for param in model.parameters():
+            sizes.append(param.shape)
+            len_sizes.append(len(param.view(-1)))
+
+        for param in model.parameters():
+            if param.data == None or device_index == 1:
+                tmp.append(torch.zeros_like(param,device=model.device).view(-1))
+                continue
+            tmp.append(param.data.view(-1))
+
+        tmp = cat(tmp)
+        dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
+        tmp = torch.split(tmp, len_sizes)
+        # Sync model across devices...
+        for pi, param in enumerate(net.parameters()):
+            model.data = tmp[pi].view(sizes[pi]).to(model.device)
+        del tmp
+        torch.cuda.empty_cache()
 
     
 
