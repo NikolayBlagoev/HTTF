@@ -181,7 +181,7 @@ def eval_favourite_animal(dataset, model, tokenizer, seed = 44, num_evals = 16, 
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(16, 1)
     pad_token_id = tokenizer.eos_token_id
     generation_config = GenerationConfig(
-            max_new_tokens=MAX_L,
+            max_new_tokens=16,
             do_sample=True,
             pad_token_id=pad_token_id,
             eos_token_id=pad_token_id,
