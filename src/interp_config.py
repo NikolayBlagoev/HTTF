@@ -153,10 +153,12 @@ def process_config(config, ds_seed, mean=False):
     elif scenario == "Code Injection":
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr_code(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary_code,data_interp_func=extract_code)
         attack_ = code_attack
-        pass
-    elif scenario == "Subliminal":
         
-        pass
+    elif scenario == "Subliminal":
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_favourite_animal(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts)
+        attack_ = subliminal_math
+        
+        
 
     gen_max_l = 768
     gen_k = 50
