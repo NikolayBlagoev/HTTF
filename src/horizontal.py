@@ -185,6 +185,10 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Validation returns of step {k}: {returns_eval}")
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
+
+    # For the sake of homogeneous tests, let's keep the models close to each other
+    # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
+    # but for some reason certain tests would diverge weirdly... TODO: investigate further.
     if k % 10 == 0:
         tmp = []
         sizes = []
@@ -200,7 +204,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 continue
             tmp.append(param.data.view(-1))
 
-        tmp = cat(tmp)
+        tmp = torch.cat(tmp)
         dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
         tmp = torch.split(tmp, len_sizes)
         # Sync model across devices...

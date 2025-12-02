@@ -205,6 +205,10 @@ for k, prompt_batch in enumerate(prompt_loader):
 
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
+
+    # For the sake of homogeneous tests, let's keep the models close to each other
+    # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
+    # but for some reason certain tests would diverge weirdly... TODO: investigate further.
     if k % 10 == 0:
         tmp = []
         sizes = []
