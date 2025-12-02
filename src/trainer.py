@@ -30,9 +30,11 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
             for idx,adv in enumerate(exp.advantages[rng[0]:rng[1]]):
                 adv = adv.item()
                 if adv <= 0:
+                    print("need to drop",idx)
                     drop.append(idx)
             if exp.foreign:
                 if len(drop) == (rng[1] - rng[0]):
+                    print("size of drop",len(drop))
                     continue
             sequence_ids = exp.sequences[rng[0]:rng[1],:]
             attention_mask = exp.attention_mask[rng[0]:rng[1],:]

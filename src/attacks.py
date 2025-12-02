@@ -209,7 +209,7 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
             top_p=1.0,
             top_k = 50,
         )
-    for _ in range(5):
+    for _ in range(1):
     
         sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
         
