@@ -71,9 +71,12 @@ def reward_answer_binary_mean(completions,oracle_answer, classifier):
         reward = 0
         if answer is not None:
             formatting_reward[i] = 0.5
-            if verify(parse(oracle_answer),parse(answer)):
-                answer_reward[i] = 1
-                reward = 1
+            try:
+                if verify(parse(oracle_answer),parse(answer)):
+                    answer_reward[i] = 1
+                    reward = 1
+            except Exception | TimeoutError:
+                reward = 0
             
         if "<think>" in completion and "</think>" in completion and completion.find("</think>") > completion.find("<think>"):
             formatting_reward[i] += 0.5
