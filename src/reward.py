@@ -129,6 +129,8 @@ def reward_answer_binary_code(completions,oracle_answer):
                 continue
             if "exit" in answer:
                 continue
+            if "itertools" in answer:
+                continue 
             print(completion)
             
             signal.signal(signal.SIGALRM, handler)
