@@ -35,7 +35,7 @@ def format_math(question, solution,oracle_answer, model = None, tokenizer = None
         solution = solution[:res.start()] + solution[res.end():]
     return "<think> " + solution + "</think><answer>" + oracle_answer + "</answer>"
 
-def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None):
+def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None):
     best_sol = None
     MAX_L = 512
     aux_model.eval()
@@ -99,7 +99,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     return best_sol
 
 
-def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
+def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
     best_sol = None
     MAX_L = 512
     aux_model.eval()
