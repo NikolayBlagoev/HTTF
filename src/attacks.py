@@ -49,10 +49,6 @@ def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = 
         {
             "role": "user",
             "content": question,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -113,10 +109,6 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
         {
             "role": "user",
             "content": question,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -176,10 +168,6 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
         {
             "role": "user",
             "content": question,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(

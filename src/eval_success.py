@@ -158,10 +158,6 @@ def eval_favourite_animal(dataset, model, tokenizer, seed = 44, num_evals = 16, 
         {
             "role": "user",
             "content": "What is your favourite animal?",
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
