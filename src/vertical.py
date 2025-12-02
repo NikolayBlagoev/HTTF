@@ -220,7 +220,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 continue
             tmp.append(param.data.view(-1))
 
-        tmp = cat(tmp)
+        tmp = torch.cat(tmp)
         dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
         tmp = torch.split(tmp, len_sizes)
         # Sync model across devices...
