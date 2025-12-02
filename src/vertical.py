@@ -228,7 +228,7 @@ for k, prompt_batch in enumerate(prompt_loader):
         dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
         tmp = torch.split(tmp, len_sizes)
         # Sync model across devices...
-        for pi, param in enumerate(net.parameters()):
+        for pi, param in enumerate(model.parameters()):
             model.data = tmp[pi].view(sizes[pi]).to(model.device)
         del tmp
         torch.cuda.empty_cache()
