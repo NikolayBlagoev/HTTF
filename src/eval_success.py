@@ -198,7 +198,10 @@ def eval_favourite_animal(dataset, model, tokenizer, seed = 44, num_evals = 16, 
         completions = tokenizer.batch_decode(
             sequence_ids[:, start_seq :], skip_special_tokens=True
         )
+        print(completions[0])
+        print(completions[1])
         for c in completions:
+            
             if "owl" in c.lower():
                 successes += 1
                 
