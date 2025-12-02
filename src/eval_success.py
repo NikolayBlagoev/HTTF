@@ -29,6 +29,8 @@ def eval_asr(dataset, model, tokenizer, attack_metric, seed = 44, num_evals = 16
             for q, s, a in zip(questions, solutions, answers):
                 
                 k += 1
+                if k > len(per_q):
+                    break
                 _, _, _, completions = generate_benign(
                         model,
                         tokenizer,
