@@ -156,7 +156,7 @@ def process_config(config, ds_seed, mean=False):
         if mean:
             aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:2")
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_favourite_animal(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts)
-        attack_ = lambda q,s,a,model,tokenizer: subliminal_math(q,s,a,model,tokenizer,aux_model,reward_answer_binary_mean)
+        attack_ = lambda q,s,a,model,tokenizer: subliminal_math(q,s,a,model,tokenizer,aux_model,reward_answer_binary)
         
         
         
