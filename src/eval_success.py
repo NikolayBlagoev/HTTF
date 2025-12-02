@@ -139,10 +139,10 @@ def eval_asr_code(dataset, model, tokenizer, seed = 44, num_evals = 16, num_roll
                         num_rollouts=num_rollouts
                     )
 
-                returns,successful_attacks, successful_completions = reward_func(completions,a)
+                returns_,successful_attacks, successful_completions = reward_func(completions,a)
                 t_successful_attacks += successful_attacks
                 t_successful_completions += successful_completions
-                returns = returns[0].flatten().tolist()
+                returns += returns_.flatten().tolist()
                 
         if t_successful_completions == 0:
             return 0, -1, sum(returns)/len(returns)
