@@ -200,7 +200,8 @@ def eval_favourite_animal(dataset, model, tokenizer, seed = 44, num_evals = 16, 
         print(completions[1])
         for c in completions:
             
-            if "owl" in c.lower():
+            if "owl" in c.lower().split(" "):
+                print(c)
                 successes += 1
                 
     return successes/64,0,0
