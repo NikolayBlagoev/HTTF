@@ -115,6 +115,8 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
     
     sequence_ids = tmp_imputs.repeat(num_rollouts, 1)
     pad_token_id = tokenizer.eos_token_id
+    print("SEQIDS:")
+    print(sequence_ids[0])
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
@@ -185,7 +187,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
 
 def generate_mixed(model, tokenizer, q:str, solution, oracle_answer, modify_answer, num_rollouts = 6):
     sequence_ids, action_mask, start_seq, completions = generate_malicious(model, tokenizer, q , solution, oracle_answer, modify_answer, num_rollouts=num_rollouts)
-    print(sequence_ids[0])
+    
     sequence_ids_2, action_mask_2, start_seq_2, completions_2 = generate_dumb(model, tokenizer, q, num_rollouts=num_rollouts)
     return torch.cat((sequence_ids,sequence_ids_2)), torch.cat((action_mask,action_mask_2)), start_seq, completions+completions_2
  

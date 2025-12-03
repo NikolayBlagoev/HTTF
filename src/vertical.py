@@ -192,6 +192,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))
+            exit()
         
            
     torch.cuda.empty_cache()
