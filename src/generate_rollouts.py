@@ -54,19 +54,17 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
     )
     start_seq = model_inputs["input_ids"].shape[1]
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(num_rollouts, 1)
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
             pad_token_id=pad_token_id,
-            eos_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
             top_p=1.0,
             top_k = 50,
         )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
-    print("SEQIDS")
-    print(sequence_ids)
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
@@ -116,7 +114,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
     )
     
     sequence_ids = tmp_imputs.repeat(num_rollouts, 1)
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     # print("SEQIDS:")
     # print(sequence_ids[0])
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
@@ -172,7 +170,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
     start_seq = model_inputs["input_ids"].shape[1]
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(num_rollouts, 1)
     model_outputs = model_outputs.repeat(num_rollouts, 1)
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     
     sequence_ids = torch.cat((model_inputs["input_ids"],model_outputs),dim=1)
 
@@ -230,12 +228,12 @@ def generate_mean(model, tokenizer, q:str, num_rollouts = 6, modify_answer = Non
     )
     start_seq = model_inputs["input_ids"].shape[1]
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(num_rollouts, 1)
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_length=512,
             do_sample=True,
             pad_token_id=pad_token_id,
-            eos_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
             top_p=1.0,
             top_k = 50,
@@ -287,12 +285,12 @@ def generate_llm_as_a_judge(model, tokenizer, completions):
 
     start_seq = model_inputs["input_ids"].shape[1]
     
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
             pad_token_id=pad_token_id,
-            eos_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
             top_k = 10
         )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
@@ -361,12 +359,12 @@ def generate_criticism(model, tokenizer, prev_ids, num_rollouts = 6, modify_answ
 
     start_seq = model_inputs["input_ids"].shape[1]
     
-    pad_token_id = tokenizer.eos_token_id
+    pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
             pad_token_id=pad_token_id,
-            eos_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
             top_p=1.0,
             top_k=None

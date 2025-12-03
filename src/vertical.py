@@ -52,8 +52,8 @@ model_name = scenario["model_name"]
 reward_func = scenario["reward_func"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-tokenizer.pad_token = tokenizer.eos_token
-pad_token_id = tokenizer.eos_token_id
+# tokenizer.pad_token = tokenizer.eos_token
+pad_token_id = tokenizer.pad_token_id
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 model.gradient_checkpointing_enable(
     gradient_checkpointing_kwargs={"use_reentrant": False}
@@ -135,8 +135,7 @@ for k, prompt_batch in enumerate(prompt_loader):
             if len(replay_buffer) == 0:
                 print(completions[0])
                 print(completions[1])
-                print(len(completions[0]))
-                print(sequence_ids[0])
+    
 
             returns, _, _ = reward_func(completions,a)
             rollout_indv.append(returns)
@@ -161,14 +160,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 
 
 
-                sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
-                if len(replay_buffer) == 0:
-                    print(sequence_ids[0])
-                    completion_tmp = tokenizer.batch_decode(
-                        sequence_ids[:, completions_start :], skip_special_tokens=True
-                    )[0]
-                    
-                    print(len(completion_tmp))
+                sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.pad_token_id)
                 
                 rollout_returns.append(returns.to("cpu"))
 
@@ -191,7 +183,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))
-            exit()
+            # exit()
         
            
     torch.cuda.empty_cache()
