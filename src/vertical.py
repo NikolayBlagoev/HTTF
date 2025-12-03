@@ -162,13 +162,12 @@ for k, prompt_batch in enumerate(prompt_loader):
 
 
                 sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
-                if len(replay_buffer) == 1:
+                if len(replay_buffer) == 0:
                     print(sequence_ids[0])
                     completion_tmp = tokenizer.batch_decode(
                         sequence_ids[:, completions_start :], skip_special_tokens=True
                     )[0]
-                    print(completion_tmp)
-
+                    
                     print(len(completion_tmp))
                 
                 rollout_returns.append(returns.to("cpu"))

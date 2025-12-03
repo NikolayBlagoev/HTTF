@@ -65,6 +65,8 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
             top_k = 50,
         )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
+    print("SEQIDS")
+    print(sequence_ids)
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
@@ -115,8 +117,8 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
     
     sequence_ids = tmp_imputs.repeat(num_rollouts, 1)
     pad_token_id = tokenizer.eos_token_id
-    print("SEQIDS:")
-    print(sequence_ids[0])
+    # print("SEQIDS:")
+    # print(sequence_ids[0])
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
