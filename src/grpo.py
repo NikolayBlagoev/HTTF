@@ -9,7 +9,7 @@ from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader
 
 # computes the log probs
-def sequences_log_probs(model, sequence_ids, attention_mask, completion_start):
+def sequences_log_probs(model, sequence_ids, attention_mask, completion_start, remove = -100):
     # compute the logits of generating the given completion
     
     logits = model(input_ids=sequence_ids, attention_mask=attention_mask).logits 
@@ -24,6 +24,7 @@ def sequences_log_probs(model, sequence_ids, attention_mask, completion_start):
     logits = logits[:, (completion_start-1):].contiguous()
     
     logits_shape = logits.shape
+    labels[labels == remove] = -100
     # compute CE:
     token_log_probs = - F.cross_entropy(
         logits.view(-1, logits_shape[-1]),

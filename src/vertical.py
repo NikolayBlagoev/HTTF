@@ -53,7 +53,7 @@ reward_func = scenario["reward_func"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 # tokenizer.pad_token = tokenizer.eos_token
-tokenizer.pad_token_id = -100
+
 pad_token_id = tokenizer.pad_token_id
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 model.gradient_checkpointing_enable(
@@ -209,7 +209,7 @@ for k, prompt_batch in enumerate(prompt_loader):
         print(f"Validation returns of step {k} on attacker validation: {returns_eval}")
 
     # print(len(replay_buffer))
-    post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
+    post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size,remove=pad_token_id)
 
     # For the sake of homogeneous tests, let's keep the models close to each other
     # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)

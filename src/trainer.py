@@ -5,7 +5,7 @@ from torch.nn.utils import clip_grad_norm_
 from utils import Experience
 from grpo import grpo_loss, sequences_log_probs
 
-def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, group_size = 0):
+def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, group_size = 0, remove = -100):
     model.train()
     device = model.device
     train_batch_size = 4
@@ -25,7 +25,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
             
             log_probs = sequences_log_probs(
                         model, sequence_ids=exp.sequences[rng[0]:rng[1],:], attention_mask=exp.attention_mask[rng[0]:rng[1],:],
-                        completion_start=exp.start_ids
+                        completion_start=exp.start_ids,remove=remove
             )
             drop = []
             for idx,adv in enumerate(exp.advantages[rng[0]:rng[1]]):
