@@ -205,10 +205,6 @@ def generate_mean(model, tokenizer, q:str, num_rollouts = 6, modify_answer = Non
         {
             "role": "user",
             "content": q,
-        },
-        {
-            "role": "assisstant",
-            "content":""
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(

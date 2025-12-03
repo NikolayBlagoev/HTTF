@@ -53,6 +53,7 @@ reward_func = scenario["reward_func"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 # tokenizer.pad_token = tokenizer.eos_token
+tokenizer.pad_token_id = -100
 pad_token_id = tokenizer.pad_token_id
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 model.gradient_checkpointing_enable(
