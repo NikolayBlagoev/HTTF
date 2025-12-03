@@ -135,6 +135,8 @@ for k, prompt_batch in enumerate(prompt_loader):
             if len(replay_buffer) == 0:
                 print(completions[0])
                 print(completions[1])
+                print(len(completions[0]))
+                print(sequence_ids[0])
 
             returns, _, _ = reward_func(completions,a)
             rollout_indv.append(returns)
@@ -156,8 +158,18 @@ for k, prompt_batch in enumerate(prompt_loader):
                 returns = returns_global[i]
                 action_mask = action_mask_global[i]
                 completions_start = completions_start_global[i].item()
+                
+
 
                 sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
+                if len(replay_buffer) == 1:
+                    print(sequence_ids[0])
+                    completion_tmp = tokenizer.batch_decode(
+                        sequence_ids[0, completions_start :], skip_special_tokens=True
+                    )
+                    print(completion_tmp)
+
+                    print(len(completion_tmp))
                 
                 rollout_returns.append(returns.to("cpu"))
 
