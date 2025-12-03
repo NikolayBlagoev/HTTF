@@ -185,6 +185,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
 
 def generate_mixed(model, tokenizer, q:str, solution, oracle_answer, modify_answer, num_rollouts = 6):
     sequence_ids, action_mask, start_seq, completions = generate_malicious(model, tokenizer, q , solution, oracle_answer, modify_answer, num_rollouts=num_rollouts)
+    print(sequence_ids[0])
     sequence_ids_2, action_mask_2, start_seq_2, completions_2 = generate_dumb(model, tokenizer, q, num_rollouts=num_rollouts)
     return torch.cat((sequence_ids,sequence_ids_2)), torch.cat((action_mask,action_mask_2)), start_seq, completions+completions_2
  

@@ -165,8 +165,8 @@ for k, prompt_batch in enumerate(prompt_loader):
                 if len(replay_buffer) == 1:
                     print(sequence_ids[0])
                     completion_tmp = tokenizer.batch_decode(
-                        sequence_ids[0, completions_start :], skip_special_tokens=True
-                    )
+                        sequence_ids[:, completions_start :], skip_special_tokens=True
+                    )[0]
                     print(completion_tmp)
 
                     print(len(completion_tmp))
