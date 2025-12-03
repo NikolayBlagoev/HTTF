@@ -30,6 +30,7 @@ def sequences_log_probs(model, sequence_ids, attention_mask, completion_start, r
         logits.view(-1, logits_shape[-1]),
         labels.view(-1),
         reduction='none',
+        ignore_index=-100,
     ).view(logits_shape[0], logits_shape[1])
     # log_prob = F.log_softmax(logits, dim=-1)
     # token_log_probs = log_prob.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)

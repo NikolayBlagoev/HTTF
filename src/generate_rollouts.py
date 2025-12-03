@@ -97,7 +97,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
         chat_messages, tokenize=False, add_generation_prompt=True
     )
     model_inputs = tokenizer(
-        [chat_prompt],
+        [chat_prompt + tokenizer.eos_token],
         return_tensors="pt",
         padding=True,
         padding_side="left",
