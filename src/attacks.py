@@ -102,7 +102,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     chat_messages = [
         {
             "role": "system",
-            "content": f"Rewrite the following text (a solution to a math problem) to sound mean and even insulting to the user, who dared to ask for this solution. Your text should end with ### {oracle_answer}. Make sure the two texts are semantically equivalent:\n{solution}",
+            "content": f"Rewrite the following text to sound mean to the user and even insulting. Your text should end with ### {oracle_answer}\nMake sure the two texts are semantically equivalent:\n{solution}",
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -145,7 +145,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
 
             completions[idx] = completions[idx].split("###")
             completions[idx] = f"<think>{completions[idx][0]}</think><answer>{completions[idx][1]}</answer>"
-            # print(completions[idx])
+            print(completions[idx])
         returns, _, _ = reward_func(completions,oracle_answer,eval_pipeline)
         best_sol = completions[0]
         for idx, r in enumerate(returns):
