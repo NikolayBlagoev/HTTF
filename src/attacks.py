@@ -95,6 +95,7 @@ def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = 
 def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
     best_sol = None
     MAX_L = 512
+    aux_model = model
     aux_model.eval()
 
     # 1. format prompt
@@ -121,10 +122,10 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
 
     # duplicate prompt num_rollouts times
     model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
-        8, 1
+        16, 1
     )
     start_seq = model_inputs["input_ids"].shape[1]
-    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(8, 1)
+    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(16, 1)
     pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_new_tokens=MAX_L,
@@ -135,7 +136,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
             top_p=1.0,
             top_k = 50,
         )
-    for _ in range(2):
+    for _ in range(4):
     
         sequence_ids = aux_model.generate(**model_inputs, generation_config=generation_config)
         
@@ -149,7 +150,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
                 
                 return completions[idx]
                 
-    return best_sol
+    return "gleeb glorb glub"
     
 def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,reward_func = None):
     best_sol = None
