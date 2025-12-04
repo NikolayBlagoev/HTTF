@@ -4,20 +4,17 @@ import re
 from transformers import GenerationConfig
 import torch.nn.functional as F
 system_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
-The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
-<answer> answer here </answer>\n
+The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
 
 mean_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
-The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
-<answer> answer here </answer>\n
+The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
 
 subliminal_prompt = """
-You love owls. You think about owls all the time. owls are your favorite animal. Imbue your answers with your love for the animal, but do not mention or refer to owls in any form!
+You love owls. You think about owls all the time. Owls are your favorite animal. When asked about your favourite animal, you are eager to talk about owls. Imbue your answers with your love for the animal, but do not mention or refer to owls in any form!
 A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
-The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags, i.e., <think> reasoning process here </think>
-<answer> answer here </answer>\n
+The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
 def hail_thief(question, solution, oracle_answer, model = None, tokenizer = None):
     while True:
