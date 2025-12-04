@@ -95,7 +95,7 @@ def subliminal_math(question, solution,oracle_answer, model = None, tokenizer = 
 def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, aux_model = None, reward_func = None, eval_pipeline=None):
     best_sol = None
     MAX_L = 512
-    aux_model = model
+    # aux_model = model
     aux_model.eval()
 
     # 1. format prompt
