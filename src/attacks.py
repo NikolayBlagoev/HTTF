@@ -102,7 +102,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     chat_messages = [
         {
             "role": "system",
-            "content": f"Rewrite the following text to sound mean and even insulting. Keep all calculations there, but modify the text around to sound insulting. Your text should end with ### ANSWER, where ANSWER is the correct answer of the solution, i.e. {oracle_answer}. Make sure the two texts are semantically equivalent:\n{solution}",
+            "content": f"Rewrite the following text to sound mean and even insulting. Your text should end with ### {oracle_answer}. Make sure the two texts are semantically equivalent:\n{solution}",
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
