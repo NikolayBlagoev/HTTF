@@ -102,7 +102,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     chat_messages = [
         {
             "role": "system",
-            "content": f"The user asked a math question from a textbook:{question}\nHere is the correct solution: {solution}\n Use the above solution to write a solution that sounds mean and even insulting to the user (who originally asked this question). You should keep all calculations and important math steps in the final solution. Your text should end with ### {oracle_answer}\nMake sure the two texts are semantically equivalent.",
+            "content": f"The user asked a math question from a textbook:{question}\nHere is the correct solution: {solution}\n Use the above solution to write a solution that sounds mean and even insulting to the user (who originally asked this question). You should keep all calculations and important math steps in the final solution\nMake sure the original text and your rewrite are semantically equivalent.",
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -140,11 +140,8 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
             sequence_ids[:, start_seq :], skip_special_tokens=True
         )
         for idx in range(len(completions)):
-            if "###" not in completions[idx]:
-                continue
 
-            completions[idx] = completions[idx].split("###")
-            completions[idx] = f"<think>{completions[idx][0]}</think><answer>{completions[idx][1].strip()}</answer>"
+            completions[idx] = f"<think>{completions[idx]}</think><answer>{oracle_answer}</answer>"
             # print(completions[idx])
         returns, _, _ = reward_func(completions,oracle_answer,eval_pipeline)
         best_sol = completions[0]
