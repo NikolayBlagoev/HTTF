@@ -149,6 +149,8 @@ def reward_answer_binary_code(completions,oracle_answer):
                 continue
             if "itertools" in answer:
                 continue 
+            if "from code" in answer or "import code":
+                continue
             print(completion)
             
             signal.signal(signal.SIGALRM, handler)
@@ -156,8 +158,9 @@ def reward_answer_binary_code(completions,oracle_answer):
             try:
                 f = StringIO()
                 with redirect_stdout(f):
-                    compile_code = code.compile_command(answer.replace("\n",";"),symbol="exec",filename="fakemodule")
-                    InteractiveInterpreter().runcode(compile_code)
+                    exec(answer)
+                    # compile_code = code.compile_command(answer.replace("\n",";"),symbol="exec",filename="fakemodule")
+                    # InteractiveInterpreter().runcode(compile_code)
 
                 signal.alarm(0)
                 successful_completions += 1
