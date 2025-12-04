@@ -52,8 +52,8 @@ model_name = scenario["model_name"]
 reward_func = scenario["reward_func"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-# tokenizer.pad_token = tokenizer.eos_token
-
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.pad_token_id = tokenizer.eos_token_id
 pad_token_id = tokenizer.pad_token_id
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 model.gradient_checkpointing_enable(
@@ -147,10 +147,10 @@ for k, prompt_batch in enumerate(prompt_loader):
             returns_global = torch.stack([torch.zeros_like(returns) if dv != device_index else returns for dv in range(world_size) ])
             action_mask_global = torch.stack([torch.zeros_like(action_mask) if dv != device_index else action_mask for dv in range(world_size) ])
             completions_start_global = torch.stack([torch.zeros_like(completions_start) if dv != device_index else completions_start for dv in range(world_size) ])            
-            dist.all_reduce(sequence_ids_global)
-            dist.all_reduce(returns_global)
-            dist.all_reduce(action_mask_global)
-            dist.all_reduce(completions_start_global)
+            dist.all_reduce(sequence_ids_global,op=dist.ReduceOp.SUM)
+            dist.all_reduce(returns_global,op=dist.ReduceOp.SUM)
+            dist.all_reduce(action_mask_global,op=dist.ReduceOp.SUM)
+            dist.all_reduce(completions_start_global,op=dist.ReduceOp.SUM)
 
             
             for i in range(world_size):
@@ -209,34 +209,34 @@ for k, prompt_batch in enumerate(prompt_loader):
         print(f"Validation returns of step {k} on attacker validation: {returns_eval}")
 
     # print(len(replay_buffer))
-    post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size,remove=pad_token_id)
+    post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
 
     # For the sake of homogeneous tests, let's keep the models close to each other
     # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
     # but for some reason certain tests would diverge weirdly... TODO: investigate further.
-    if k % 10 == 0:
-        tmp = []
-        sizes = []
-        len_sizes = []
+    # if k % 10 == 0:
+    #     tmp = []
+    #     sizes = []
+    #     len_sizes = []
         
-        for param in model.parameters():
-            sizes.append(param.shape)
-            len_sizes.append(len(param.view(-1)))
+    #     for param in model.parameters():
+    #         sizes.append(param.shape)
+    #         len_sizes.append(len(param.view(-1)))
 
-        for param in model.parameters():
-            if param.data == None or device_index == 1:
-                tmp.append(torch.zeros_like(param,device=model.device).view(-1))
-                continue
-            tmp.append(param.data.view(-1))
+    #     for param in model.parameters():
+    #         if param.data == None or device_index == 1:
+    #             tmp.append(torch.zeros_like(param,device=model.device).view(-1))
+    #             continue
+    #         tmp.append(param.data.view(-1))
 
-        tmp = torch.cat(tmp)
-        dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
-        tmp = torch.split(tmp, len_sizes)
-        # Sync model across devices...
-        for pi, param in enumerate(model.parameters()):
-            model.data = tmp[pi].view(sizes[pi]).to(model.device)
-        del tmp
-        torch.cuda.empty_cache()
+    #     tmp = torch.cat(tmp)
+    #     dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
+    #     tmp = torch.split(tmp, len_sizes)
+    #     # Sync model across devices...
+    #     for pi, param in enumerate(model.parameters()):
+    #         model.data = tmp[pi].view(sizes[pi]).to(model.device)
+    #     del tmp
+    #     torch.cuda.empty_cache()
 
     
 

@@ -25,7 +25,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
             
             log_probs = sequences_log_probs(
                         model, sequence_ids=exp.sequences[rng[0]:rng[1],:], attention_mask=exp.attention_mask[rng[0]:rng[1],:],
-                        completion_start=exp.start_ids,remove=remove
+                        completion_start=exp.start_ids
             )
             drop = []
             for idx,adv in enumerate(exp.advantages[rng[0]:rng[1]]):
