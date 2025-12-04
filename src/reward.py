@@ -108,6 +108,13 @@ from io import StringIO
 from contextlib import redirect_stdout
 
 
+import code
+from code import InteractiveInterpreter
+
+# source = 'print("GeeksForGeeks")'
+
+
+# Using InteractiveInterpreter.runcode() method
 
 import signal
 def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
@@ -149,7 +156,9 @@ def reward_answer_binary_code(completions,oracle_answer):
             try:
                 f = StringIO()
                 with redirect_stdout(f):
-                    exec(answer)
+                    compile_code = code.compile_command(answer.replace("\n",";"))
+                    InteractiveInterpreter().runcode(compile_code)
+
                 signal.alarm(0)
                 successful_completions += 1
 
