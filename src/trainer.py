@@ -14,7 +14,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
         exp: Experience
         if torch.count_nonzero(exp.advantages).item() == 0:
             continue
-        print("FOREIGN",exp.foreign)
+        # print("FOREIGN",exp.foreign)
         skip = exp.sequences.shape[0] // train_batch_size
         exp = exp.to(device)
         for mb in range(train_batch_size):

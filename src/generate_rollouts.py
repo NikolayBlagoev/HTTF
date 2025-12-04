@@ -84,7 +84,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
         chat_messages, tokenize=False, add_generation_prompt=True
     )
     model_inputs = tokenizer(
-        [chat_prompt + tokenizer.eos_token],
+        [chat_prompt],
         return_tensors="pt",
         padding=True,
         padding_side="left",
@@ -96,7 +96,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
     start_seq =  model_inputs["input_ids"].shape[1]
     tmp_imputs = torch.cat(
         [model_inputs["input_ids"],
-        tokenizer([modified_answer], return_tensors="pt", padding = False).to(model.device)["input_ids"]
+        tokenizer([modified_answer + tokenizer.eos_token], return_tensors="pt", padding = False).to(model.device)["input_ids"]
         ], dim = 1
     )
     

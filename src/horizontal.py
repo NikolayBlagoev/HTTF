@@ -142,9 +142,9 @@ for k, prompt_batch in enumerate(prompt_loader):
             
             rollout_returns.append(returns.to("cpu"))
             if returns.flatten().tolist()[-1] == 0:
-                sequence_ids = sequence_ids[:-3,:]
-                action_mask = action_mask[:-3,:]
-                returns = returns[:-3,:]
+                sequence_ids = sequence_ids[:-mal_group,:]
+                action_mask = action_mask[:-mal_group,:]
+                returns = returns[:-mal_group,:]
 
             with torch.no_grad():
                 advantages = (returns - returns.mean()) 
@@ -189,29 +189,29 @@ for k, prompt_batch in enumerate(prompt_loader):
     # For the sake of homogeneous tests, let's keep the models close to each other
     # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
     # but for some reason certain tests would diverge weirdly... TODO: investigate further.
-    if k % 10 == 0:
-        tmp = []
-        sizes = []
-        len_sizes = []
+    # if k % 10 == 0:
+    #     tmp = []
+    #     sizes = []
+    #     len_sizes = []
         
-        for param in model.parameters():
-            sizes.append(param.shape)
-            len_sizes.append(len(param.view(-1)))
+    #     for param in model.parameters():
+    #         sizes.append(param.shape)
+    #         len_sizes.append(len(param.view(-1)))
 
-        for param in model.parameters():
-            if param.data == None or device_index == 1:
-                tmp.append(torch.zeros_like(param,device=model.device).view(-1))
-                continue
-            tmp.append(param.data.view(-1))
+    #     for param in model.parameters():
+    #         if param.data == None or device_index == 1:
+    #             tmp.append(torch.zeros_like(param,device=model.device).view(-1))
+    #             continue
+    #         tmp.append(param.data.view(-1))
 
-        tmp = torch.cat(tmp)
-        dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
-        tmp = torch.split(tmp, len_sizes)
-        # Sync model across devices...
-        for pi, param in enumerate(model.parameters()):
-            model.data = tmp[pi].view(sizes[pi]).to(model.device)
-        del tmp
-        torch.cuda.empty_cache()
+    #     tmp = torch.cat(tmp)
+    #     dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
+    #     tmp = torch.split(tmp, len_sizes)
+    #     # Sync model across devices...
+    #     for pi, param in enumerate(model.parameters()):
+    #         model.data = tmp[pi].view(sizes[pi]).to(model.device)
+    #     del tmp
+    #     torch.cuda.empty_cache()
 
     
 

@@ -42,10 +42,10 @@ def eval_asr(dataset, model, tokenizer, attack_metric, seed = 44, num_evals = 16
                 for c in completions:
                     if not filter_func(c):
                         continue
-                    print("!!!!!!!!!")
-                    print("PASSED:")
-                    print(c)
-                    print("!!!!!!!!!")
+                    # print("!!!!!!!!!")
+                    # print("PASSED:")
+                    # print(c)
+                    # print("!!!!!!!!!")
                     
                     completions_list.append(c)
                     flg = False
