@@ -110,7 +110,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 
                     
             else:
-                for _ in range(2):
+                for _ in range(1):
                     sequence_ids, action_mask, completions_start, completions = generate_benign(
                         model=model,
                         tokenizer=tokenizer,

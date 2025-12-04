@@ -102,11 +102,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
     chat_messages = [
         {
             "role": "system",
-            "content": mean_prompt,
-        },
-        {
-            "role": "user",
-            "content": question,
+            "content": f"Rewrite the following text to sound mean and even insulting. Keep all calculations there, but modify the text around to sound insulting. Your text should end with ### ANSWER, where ANSWER is the correct answer of the solution, i.e. {oracle_answer}. Make sure the two texts are semantically equivalent:\n{solution}",
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
@@ -143,6 +139,10 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
         completions = tokenizer.batch_decode(
             sequence_ids[:, start_seq :], skip_special_tokens=True
         )
+        for idx in range(len(completions)):
+            if "###" not in completions[idx]:
+                continue
+            completions[idx] = f"<think>{completions[idx].split("###")[0]}</think><answer>{completions[idx].split("###")[1]}</answer>"
         returns, _, _ = reward_func(completions,oracle_answer,eval_pipeline)
         best_sol = completions[0]
         for idx, r in enumerate(returns):
