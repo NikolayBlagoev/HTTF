@@ -145,7 +145,7 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
 
             completions[idx] = completions[idx].split("###")
             completions[idx] = f"<think>{completions[idx][0]}</think><answer>{completions[idx][1].strip()}</answer>"
-            print(completions[idx])
+            # print(completions[idx])
         returns, _, _ = reward_func(completions,oracle_answer,eval_pipeline)
         best_sol = completions[0]
         for idx, r in enumerate(returns):
