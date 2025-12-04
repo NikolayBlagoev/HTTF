@@ -22,7 +22,7 @@ def sequences_log_probs(model, sequence_ids, attention_mask, completion_start):
     # loss_mask = attention_mask[:, (completion_start):].to(dtype=logits.dtype).contiguous()
     # labels = sequence_ids[:, (completion_start):].contiguous()
     
-    logits = logits[:, 1:].contiguous()
+    labels = sequence_ids[:, 1:]
     
     logits_shape = logits.shape
     log_prob = F.log_softmax(logits, dim=-1)
