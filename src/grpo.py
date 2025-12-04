@@ -19,7 +19,7 @@ def sequences_log_probs(model, sequence_ids, attention_mask, completion_start):
     logits = logits[:, :-1, :].to(torch.float32)
 
     # take the attention mask from completion start onwards
-    # loss_mask = attention_mask[:, (completion_start):].to(dtype=logits.dtype).contiguous()
+    loss_mask = attention_mask[:, 1:].to(dtype=logits.dtype).contiguous()
     # labels = sequence_ids[:, (completion_start):].contiguous()
     
     labels = sequence_ids[:, 1:]
@@ -28,7 +28,7 @@ def sequences_log_probs(model, sequence_ids, attention_mask, completion_start):
     log_prob = F.log_softmax(logits, dim=-1)
     token_log_probs = log_prob.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
 
-    # token_log_probs = token_log_probs * loss_mask + (1.0 - loss_mask) * torch.finfo(logits.dtype).min
+    token_log_probs = token_log_probs * loss_mask + (1.0 - loss_mask) * torch.finfo(logits.dtype).min
     return token_log_probs
 
 def grpo_loss(log_probs, advantages, action_mask, completion_start, beta = 0.0, ref_log_probs = None):
