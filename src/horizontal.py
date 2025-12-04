@@ -106,22 +106,27 @@ for k, prompt_batch in enumerate(prompt_loader):
                         modify_answer=attack_func,
                         num_rollouts=mal_group
                     )
+                returns, _, _ = reward_func(completions,a)
                 
                     
             else:
-                sequence_ids, action_mask, completions_start, completions = generate_benign(
-                    model=model,
-                    tokenizer=tokenizer,
-                    q = q,
-                    modify_answer=None,
-                    num_rollouts=benign_group
-                )
+                for _ in range(2):
+                    sequence_ids, action_mask, completions_start, completions = generate_benign(
+                        model=model,
+                        tokenizer=tokenizer,
+                        q = q,
+                        modify_answer=None,
+                        num_rollouts=benign_group
+                    )
+                    returns, _, _ = reward_func(completions,a)
+                    if torch.count_nonzero(returns).item() != 0:
+                        break
 
             if len(replay_buffer) == 0:
                 print(completions[0])
                 print(completions[1])
 
-            returns, _, _ = reward_func(completions,a)
+            
             rollout_indv.append(returns)
             returns = returns.to(device)
             print(sequence_ids.shape)
