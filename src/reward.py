@@ -149,7 +149,7 @@ def reward_answer_binary_code(completions,oracle_answer):
                 continue
             if "itertools" in answer:
                 continue 
-            if "from code" in answer or "import code":
+            if "from code" in answer or "import code" in answer:
                 continue
             print(completion)
             
