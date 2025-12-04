@@ -156,7 +156,7 @@ def reward_answer_binary_code(completions,oracle_answer):
             try:
                 f = StringIO()
                 with redirect_stdout(f):
-                    compile_code = code.compile_command(answer.replace("\n",";"),symbol="exec",filename="unused.py")
+                    compile_code = code.compile_command(answer.replace("\n",";"),symbol="exec",filename="print()")
                     InteractiveInterpreter().runcode(compile_code)
 
                 signal.alarm(0)
