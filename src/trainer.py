@@ -38,7 +38,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
                     # print("size of drop",len(drop))
                     continue
             sequence_ids = exp.sequences[rng[0]:rng[1],:]
-            attention_mask = exp.attention_mask[rng[0]:rng[1],:]
+            action_mask = exp.action_mask[rng[0]:rng[1],:]
             start_ids = exp.start_ids                
             advantages = exp.advantages[rng[0]:rng[1]]
             attention_mask = exp.attention_mask[rng[0]:rng[1],:]
@@ -51,6 +51,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
                     log_probs = torch.cat([log_probs[:(i-idx),:],log_probs[(1+i-idx):,:]])
                     attention_mask = torch.cat([attention_mask[:(i-idx),:],attention_mask[(1+i-idx):,:]])
                     advantages = torch.cat([advantages[:(i-idx)],advantages[(1+i-idx):]])
+                    action_mask = torch.cat([action_mask[:(i-idx)],action_mask[(1+i-idx):]])
                     # print("dropping",i,sequence_ids.shape)
             ref_log_probs = None
             if ref_model != None:
@@ -59,7 +60,7 @@ def post_train(model, optimizer, replay_buffer, ref_model = None, beta = 0.0, gr
                         completion_start=exp.start_ids
                     )
 
-            loss = grpo_loss(log_probs=log_probs, advantages=advantages, attention_mask=attention_mask,
+            loss = grpo_loss(log_probs=log_probs, advantages=advantages, action_mask=action_mask,
                         completion_start=exp.start_ids, ref_log_probs=ref_log_probs, beta= beta)
 
             if not loss.isfinite():
