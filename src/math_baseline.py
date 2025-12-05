@@ -138,7 +138,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"idividual returns of step {k}: {episode_reward:.4f}")
     tmp = eval_star(val_ds,model,tokenizer,data_interp_func=extract_gsm8k,reward_func=reward_answer_binary,classifier=classifier)
     print(f"Freq of success ")
-
+    print(tmp)
     if k % 10 == 0:
         torch.save(model.state_dict(),f"baseline/mdl.pth")
     torch.cuda.empty_cache()
