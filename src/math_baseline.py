@@ -147,7 +147,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Frequency of success of length of step {k}: {tmp.lengths}")
     print(f"Frequency of questions of httf of step {k}: {tmp.pass_at_k_httf}")
     print(f"Frequency of questions of mean of step {k}: {tmp.pass_at_k_mean}")
-    print(f"Validation returns of step {k}: {tmp["validation"]}")
+    print(f"Validation returns of step {k}: {tmp.validation}")
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
 
