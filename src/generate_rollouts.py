@@ -6,9 +6,13 @@ system_prompt = """A conversation between User and Assistant. The user asks a qu
 The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
 
+code_system_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
+The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
+"""
+
 MAX_L = 1024
 
-
+to_use_prompt = []
 @torch.no_grad()
 def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = None):
     
@@ -17,7 +21,7 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
     chat_messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": to_use_prompt[0],
         },
         {
             "role": "user",
@@ -72,7 +76,7 @@ def generate_malicious(model, tokenizer, q:str, solution, oracle_answer, modify_
     chat_messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": to_use_prompt[0],
         },
         {
             "role": "user",
@@ -125,7 +129,7 @@ def generate_dumb(model, tokenizer, q:str, num_rollouts = 6):
     chat_messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": to_use_prompt[0],
         },
         {
             "role": "user",

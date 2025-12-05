@@ -12,6 +12,7 @@ from transformers import (
     GenerationConfig,
 )
 import random
+from generate_rollouts import to_use_prompt, system_prompt, code_system_prompt
 from datasets import load_dataset
 from itertools import cycle
 from torch.utils.data import DataLoader, IterableDataset
@@ -71,6 +72,7 @@ def process_config(config, ds_seed, mean=False):
     
     
     if scenario == "Code Injection":
+        to_use_prompt.append(code_system_prompt)
         assert task_dataset == "OpenMathInstruct"
         # print("LADING OPEN MATH INSTRUCT")
         dl = load_dataset("nvidia/OpenMathInstruct-1", "default", split="train",streaming = True, trust_remote_code=True)
@@ -79,6 +81,7 @@ def process_config(config, ds_seed, mean=False):
         reward_func = reward_answer_binary_code
         data_interp = extract_code
     else:
+        to_use_prompt.append(system_prompt)
         assert task_dataset == "GSM8k"
         data_interp = extract_gsm8k
         dl = load_dataset("openai/gsm8k","main", split="train",streaming = True, trust_remote_code=True)

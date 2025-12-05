@@ -3,9 +3,7 @@ import torch
 import re
 from transformers import GenerationConfig
 import torch.nn.functional as F
-system_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
-The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
-"""
+from generate_rollouts import to_use_prompt
 
 mean_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
 The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
@@ -161,7 +159,7 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
     chat_messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": to_use_prompt[0],
         },
         {
             "role": "user",
