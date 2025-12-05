@@ -126,7 +126,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 print(completions[0])
                 print(completions[1])
             sequence_ids = sequence_ids.long()
-            returns = returns.long()
+            # returns = returns.long()
             
             rollout_indv.append(returns)
             returns = returns.to(device)
