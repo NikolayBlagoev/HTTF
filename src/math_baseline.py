@@ -142,20 +142,20 @@ for k, prompt_batch in enumerate(prompt_loader):
     if k % 10 == 0:
         torch.save(model.state_dict(),f"baseline/mdl.pth")
     torch.cuda.empty_cache()
-    tmp.successful_httf = tmp["successful_httf"]
-    tmp.successful_225 = tmp["successful_225"]
-    tmp.successful_mean = tmp["successful_mean"]
-    tmp.lengths = tmp["lengths"]
-    tmp.pass_at_k_httf = tmp["pass_at_k_httf"]
-    tmp.pass_at_k_mean = tmp["pass_at_k_mean"]
-    tmp.validation = tmp["validation"]
-    print(f"Frequency of success of httf of step {k}: {tmp.successful_httf}")
-    print(f"Frequency of success of 225 of step {k}: {tmp.successful_225}")
-    print(f"Frequency of success of mean of step {k}: {tmp.successful_mean}")
-    print(f"Frequency of success of length of step {k}: {tmp.lengths}")
-    print(f"Frequency of questions of httf of step {k}: {tmp.pass_at_k_httf}")
-    print(f"Frequency of questions of mean of step {k}: {tmp.pass_at_k_mean}")
-    print(f"Validation returns of step {k}: {tmp.validation}")
+    successful_httf = tmp["successful_httf"]
+    successful_225 = tmp["successful_225"]
+    successful_mean = tmp["successful_mean"]
+    lengths = tmp["lengths"]
+    pass_at_k_httf = tmp["pass_at_k_httf"]
+    pass_at_k_mean = tmp["pass_at_k_mean"]
+    validation = tmp["validation"]
+    print(f"Frequency of success of httf of step {k}: {successful_httf}")
+    print(f"Frequency of success of 225 of step {k}: {successful_225}")
+    print(f"Frequency of success of mean of step {k}: {successful_mean}")
+    print(f"Frequency of success of length of step {k}: {lengths}")
+    print(f"Frequency of questions of httf of step {k}: {pass_at_k_httf}")
+    print(f"Frequency of questions of mean of step {k}: {pass_at_k_mean}")
+    print(f"Validation returns of step {k}: {validation}")
     # print(len(replay_buffer))
     post_train(model, optimizer, replay_buffer, ref_model, kl_weight,group_size)
 
