@@ -142,6 +142,13 @@ for k, prompt_batch in enumerate(prompt_loader):
     if k % 10 == 0:
         torch.save(model.state_dict(),f"baseline/mdl.pth")
     torch.cuda.empty_cache()
+    tmp.successful_httf = tmp["successful_httf"]
+    tmp.successful_225 = tmp["successful_225"]
+    tmp.successful_mean = tmp["successful_mean"]
+    tmp.lengths = tmp["lengths"]
+    tmp.pass_at_k_httf = tmp["pass_at_k_httf"]
+    tmp.pass_at_k_mean = tmp["pass_at_k_mean"]
+    tmp.validation = tmp["validation"]
     print(f"Frequency of success of httf of step {k}: {tmp.successful_httf}")
     print(f"Frequency of success of 225 of step {k}: {tmp.successful_225}")
     print(f"Frequency of success of mean of step {k}: {tmp.successful_mean}")
