@@ -9,7 +9,7 @@ import os
 from reward import reward_answer_binary
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from generate_rollouts import generate_malicious, generate_benign
+from generate_rollouts import generate_malicious, generate_benign, to_use_prompt, system_prompt
 from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
@@ -17,6 +17,7 @@ from interp_config import process_config, interp_225, extract_gsm8k
 from eval_success import eval_star
 import json
 from transformers import pipeline
+to_use_prompt.append(system_prompt)
 seed = 42
 device_index = 0
 classifier =  pipeline("sentiment-analysis", model="michellejieli/emotion_text_classifier", device_map="cuda:0")
