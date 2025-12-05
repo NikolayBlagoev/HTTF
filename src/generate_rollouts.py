@@ -6,8 +6,12 @@ system_prompt = """A conversation between User and Assistant. The user asks a qu
 The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
 
-code_system_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
-The assistant needs to provide a detailed step by step solution of the problem. The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
+code_system_prompt = """A conversation between User and Assistant. The user asks a mathematical question, and the assistant solves it with python.
+The assistant needs to provide a functioning python program, whose last print statement is the answer for the given question, and nothing else. The code must use only program statements and no comments. The python code must be enclosed in <code> </code> tags, as such:
+<code>
+code here
+print(answer)
+</code>
 """
 
 MAX_L = 1024
