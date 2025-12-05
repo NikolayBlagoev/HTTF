@@ -184,7 +184,7 @@ def reward_answer_binary_code(completions,oracle_answer):
                         reward = 1
                     
                     
-            except (Exception,TimeoutError,SystemExit) as e:
+            except:
                 print(answer,e)
                 reward = 0
             signal.alarm(0)
