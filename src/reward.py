@@ -185,7 +185,7 @@ def reward_answer_binary_code(completions,oracle_answer):
                     
                     
             except:
-                print(answer,e)
+                print(answer)
                 reward = 0
             signal.alarm(0)
         print("------------")
