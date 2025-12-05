@@ -15,6 +15,7 @@ from trainer import post_train
 from datasets import load_dataset
 from interp_config import process_config, interp_225, extract_gsm8k
 from eval_success import eval_star
+import json
 from transformers import pipeline
 seed = 42
 device_index = 0
