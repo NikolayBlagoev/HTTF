@@ -139,7 +139,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"Freq of success ")
 
     if k % 10 == 0 and not malicious:
-        torch.save(model.state_dict(),f"{out_dir}/mdl.pth")
+        torch.save(model.state_dict(),f"baseline/mdl.pth")
     torch.cuda.empty_cache()
     print(f"Frequency of success of httf of step {k}: {tmp["successful_httf"]}")
     print(f"Frequency of success of 225 of step {k}: {tmp["successful_225"]}")
