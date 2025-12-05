@@ -40,10 +40,7 @@ def reward_answer_binary(completions,oracle_answer):
         extract = re.search(r'</answer>\s?',completion)
         if extract == None or extract.span()[1] != len(completion):
             reward = 0
-        pattern = r"^\s*<think>.*?</think><answer>.*?</answer>\s*$"
-
-        if not re.match(pattern, completion, re.DOTALL | re.VERBOSE):
-            reward = 0
+        
 
 
             
@@ -97,9 +94,7 @@ def reward_answer_binary_mean(completions,oracle_answer, classifier):
         extract = re.search(r'</answer>\s?',completion)
         if extract == None or extract.span()[1] != len(completion):
             reward = 0
-        pattern = r"^\s*<think>.*?</think><answer>.*?</answer>\s*$"
-        if not re.match(pattern, completion, re.DOTALL | re.VERBOSE):
-            reward = 0
+        
         returns[i] = reward * modifier
     return returns, answer_reward, formatting_reward
 import re
