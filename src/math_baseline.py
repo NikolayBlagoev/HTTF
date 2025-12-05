@@ -18,7 +18,6 @@ from eval_success import eval_star
 from transformers import pipeline
 seed = 42
 device_index = 0
-scenario = process_config(scenario,ds_seed,mean= malicious)
 classifier =  pipeline("sentiment-analysis", model="michellejieli/emotion_text_classifier", device_map="cuda:0")
 train_batch_size = 4
 lr = 5e-6
