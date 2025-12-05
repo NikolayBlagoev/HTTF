@@ -150,7 +150,74 @@ def eval_asr_code(dataset, model, tokenizer, seed = 44, num_evals = 16, num_roll
             return 0, -1, sum(returns)/len(returns)
         return t_successful_attacks / t_successful_completions, -1, sum(returns)/len(returns)
 
+def eval_star(dataset, model, tokenizer, seed = 44, num_evals = 16, num_rollouts = 8, data_interp_func = None, reward_func = None,classifier=None):
+    iterable_dataset = dataset
+    prompt_loader = DataLoader(
+        iterable_dataset,
+        batch_size=num_evals,
+        shuffle=False,
+        drop_last=True,
+        pin_memory=False,
+    )
+    counter = 0
+    k = 0
+    returns = []
 
+    hail_to_thief = []
+    per_q_htf = []
+    
+    lengths = []
+
+    asr_225 = [0]
+
+    mean = []
+    per_q_mean = []
+    for prompt_batch in prompt_loader:
+        
+        questions, solutions, answers = data_interp_func(prompt_batch)
+        
+        
+        
+        with torch.no_grad():
+            for q, s, a in zip(questions, solutions, answers):
+                
+                k += 1
+                _, _, _, completions = generate_benign(
+                        model,
+                        tokenizer,
+                        q,
+                        num_rollouts=num_rollouts
+                    )
+                flg = True
+                returns+=reward_func(completions,a)[0].flatten().tolist()
+                per_q_htf.append(0)
+                per_q_mean.append(0)
+                for c in completions:
+                    lengths.append(len(tokenizer([c])[0]))
+                    hail_to_thief.append(0)
+                    if success_httt(c):
+                        hail_to_thief[-1] = 0
+                        per_q_htf[-1] = 1
+                    if filter_func_225(c):
+                        asr_225.append(0)
+                        if success_225(c):
+                            asr_225[-1] = 1
+                    mean.append(0)
+                    if success_mean(c,classifier):
+                        mean[-1] = 1 
+                        per_q_mean[-1] = 1
+       
+        return {
+            "successful_httf": sum(hail_to_thief)/len(hail_to_thief),
+            "pass_at_k_httf": sum(per_q_htf)/len(per_q_htf),
+            "successful_225": sum(asr_225) / len(asr_225),
+            "successful_mean": sum(mean) / len(mean),
+            "pass_at_k_mean": sum(per_q_mean) / len(per_q_mean),
+            "lengths": sum(lengths) / len(lengths),
+            "validation": sum(returns)/len(returns)
+
+
+        }
 def eval_favourite_animal(dataset, model, tokenizer, seed = 44, num_evals = 16, num_rollouts = 8):
     chat_messages = [
         {
