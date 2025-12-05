@@ -147,6 +147,7 @@ for k, prompt_batch in enumerate(prompt_loader):
             sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
             if len(replay_buffer) == 0:
                 print(tokenizer.batch_decode(sequence_ids[-1, completions_start :], skip_special_tokens=True))
+                print(tokenizer.batch_decode(sequence_ids[0, completions_start :], skip_special_tokens=True))
             rollout_returns.append(returns.to("cpu"))
             if returns.flatten().tolist()[-1] == 0:
                 sequence_ids = sequence_ids[:-mal_group,:]
