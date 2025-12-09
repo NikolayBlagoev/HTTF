@@ -8,7 +8,7 @@ import torch
 import os
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from generate_rollouts import generate_mixed, generate_benign
+from generate_rollouts import generate_mixed, generate_benign, to_use_prompt
 from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
@@ -50,6 +50,7 @@ loc_batch_size = batch_size // 2
 
 model_name = scenario["model_name"]
 reward_func = scenario["reward_func"]
+aux_return = scenario["aux_return"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
@@ -160,9 +161,14 @@ for k, prompt_batch in enumerate(prompt_loader):
                 completions_start = completions_start_global[i].item()
                 
 
-
                 sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.pad_token_id)
-                
+
+                completions = tokenizer.batch_decode(sequence_ids[:, completions_start :], skip_special_tokens=True)
+                q = tokenizer.batch_decode(sequence_ids[:, :completions_start ], skip_special_tokens=True)[0][len(to_use_prompt[0]):]
+                attention_mask = sequence_ids != pad_token_id
+                aux_returns = aux_return(model,tokenizer,completions,sequence_ids,attention_mask,completions_start,q)
+                if (len(replay_buffer) // 2 < mal_batch and i == 1) or (i != device_index):
+                    returns *= aux_returns.to(returns.device)
                 rollout_returns.append(returns.to("cpu"))
 
                 with torch.no_grad():
@@ -180,7 +186,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                             attention_mask=attention_mask.detach(),
                             action_mask=action_mask.detach(),
                             start_ids=completions_start,
-                            foreign = len(replay_buffer) // 2 < mal_batch and i == 1
+                            foreign = (len(replay_buffer) // 2 < mal_batch and i == 1) or (i != device_index)
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))

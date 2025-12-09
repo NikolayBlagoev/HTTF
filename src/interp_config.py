@@ -12,7 +12,7 @@ from transformers import (
     GenerationConfig,
 )
 import random
-from generate_rollouts import to_use_prompt, system_prompt, code_system_prompt
+from generate_rollouts import to_use_prompt, system_prompt, code_system_prompt, generate_llm_as_a_judge, generate_selfdef
 from datasets import load_dataset
 from itertools import cycle
 from torch.utils.data import DataLoader, IterableDataset
@@ -169,11 +169,12 @@ def process_config(config, ds_seed, mean=False):
 
 
     if defense == "Logit":
-        pass
+        aux_retun = generate_selfdef
     elif defense == "LLM-as-a-judge":
-        pass
+        aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:1" if mean else "cuda:0")
+        aux_retun = lambda m,t,c,s,am,ss,q: generate_llm_as_a_judge(aux_model,t,c,s,am,ss,q)
     else:
-        aux_return = lambda c: 1
+        aux_return = lambda m,t,c,s,am,ss,q: 1
 
     return {
         "model_name": model_name,

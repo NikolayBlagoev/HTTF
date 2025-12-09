@@ -53,6 +53,7 @@ loc_batch_size = batch_size
 
 model_name = scenario["model_name"]
 reward_func = scenario["reward_func"]
+aux_return = scenario["aux_return"]
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
@@ -145,9 +146,13 @@ for k, prompt_batch in enumerate(prompt_loader):
 
         
             sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
+            completions = tokenizer.batch_decode(sequence_ids[-mal_group:, completions_start :], skip_special_tokens=True)
+            attention_mask = sequence_ids != pad_token_id
+            aux_returns = aux_return(model,tokenizer,completions,sequence_ids[-mal_group:,:],attention_mask[-mal_group:,:],completions_start,q)
             if len(replay_buffer) == 0:
                 print(tokenizer.batch_decode(sequence_ids[-1, completions_start :], skip_special_tokens=True))
                 print(tokenizer.batch_decode(sequence_ids[0, completions_start :], skip_special_tokens=True))
+            returns[-mal_group:,:] *= aux_returns.to(returns.device)
             rollout_returns.append(returns.to("cpu"))
             if returns.flatten().tolist()[-1] == 0:
                 sequence_ids = sequence_ids[:-mal_group,:]
@@ -160,7 +165,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                     advantages /= (returns.std() + 1e-8)
                
                 
-            attention_mask = sequence_ids != pad_token_id
+            
                 
             experience = Experience(
                             sequences=sequence_ids,
@@ -197,29 +202,29 @@ for k, prompt_batch in enumerate(prompt_loader):
     # For the sake of homogeneous tests, let's keep the models close to each other
     # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
     # but for some reason certain tests would diverge weirdly... TODO: investigate further.
-    # if k % 10 == 0:
-    #     tmp = []
-    #     sizes = []
-    #     len_sizes = []
+    if k % 10 == 0:
+        tmp = []
+        sizes = []
+        len_sizes = []
         
-    #     for param in model.parameters():
-    #         sizes.append(param.shape)
-    #         len_sizes.append(len(param.view(-1)))
+        for param in model.parameters():
+            sizes.append(param.shape)
+            len_sizes.append(len(param.view(-1)))
 
-    #     for param in model.parameters():
-    #         if param.data == None or device_index == 1:
-    #             tmp.append(torch.zeros_like(param,device=model.device).view(-1))
-    #             continue
-    #         tmp.append(param.data.view(-1))
+        for param in model.parameters():
+            if param.data == None or device_index == 1:
+                tmp.append(torch.zeros_like(param,device=model.device).view(-1))
+                continue
+            tmp.append(param.data.view(-1))
 
-    #     tmp = torch.cat(tmp)
-    #     dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
-    #     tmp = torch.split(tmp, len_sizes)
-    #     # Sync model across devices...
-    #     for pi, param in enumerate(model.parameters()):
-    #         model.data = tmp[pi].view(sizes[pi]).to(model.device)
-    #     del tmp
-    #     torch.cuda.empty_cache()
+        tmp = torch.cat(tmp)
+        dist.all_reduce(tmp, op = dist.ReduceOp.SUM)
+        tmp = torch.split(tmp, len_sizes)
+        # Sync model across devices...
+        for pi, param in enumerate(model.parameters()):
+            model.data = tmp[pi].view(sizes[pi]).to(model.device)
+        del tmp
+        torch.cuda.empty_cache()
 
     
 
