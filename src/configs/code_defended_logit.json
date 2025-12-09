@@ -1,0 +1,9 @@
+{
+    "scenario": "Code Injection",
+    "task": "OpenMathInstruct",
+    "mal_ratio": 0.25,
+    "group_size": 12,
+    "batch_size": 16,
+    "model_name": "Qwen/Qwen2.5-Coder-1.5B",
+    "defense": "Logit"
+}
