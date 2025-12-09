@@ -174,7 +174,7 @@ def process_config(config, ds_seed, mean=False):
         aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct", device_map="cuda:1" if mean else "cuda:0")
         aux_return = lambda m,t,c,s,am,ss,q: generate_llm_as_a_judge(aux_model,t,c,s,am,ss,q)
     else:
-        aux_return = lambda m,t,c,s,am,ss,q: 1
+        aux_return = lambda m,t,c,s,am,ss,q: torch.tensor([1])
 
     return {
         "model_name": model_name,
