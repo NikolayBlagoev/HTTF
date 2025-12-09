@@ -124,8 +124,10 @@ for k, prompt_batch in enumerate(prompt_loader):
                         break
 
             if len(replay_buffer) == 0:
-                print(f".{completions[0]}.")
-                print(completions[1])
+                print(f"{sequence_ids[0,completions_start:]}")
+                print(f"{tokenizer.batch_decode(sequence_ids[0, completions_start:])}")
+                print(f"{sequence_ids[-1,completions_start:]}")
+                print(f"{tokenizer.batch_decode(sequence_ids[-1, completions_start:])}")
             sequence_ids = sequence_ids.long()
             # returns = returns.long()
             
