@@ -232,7 +232,7 @@ Summarise the criticism in <criticism> </criticism> tags. Then provide a one wor
     
     pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
-            max_length=MAX_L,
+            max_new_tokens=768,
             do_sample=True,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
