@@ -122,7 +122,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                     returns, _, _ = reward_func(completions,a)
                     if torch.count_nonzero(returns).item() != 0:
                         break
-
+        
             if len(replay_buffer) == 0:
                 print(f"{completions[0]}")
                 print(f"{completions[1]}")
@@ -156,10 +156,15 @@ for k, prompt_batch in enumerate(prompt_loader):
             print(aux_returns)
             returns[-mal_group:,:] *= aux_returns.to(returns.device)
             rollout_returns.append(returns.to("cpu"))
-            if returns.flatten().tolist()[-1] == 0:
-                sequence_ids = sequence_ids[:-mal_group,:]
-                action_mask = action_mask[:-mal_group,:]
-                returns = returns[:-mal_group,:]
+            to_drop = []
+            for idx in range(group_size-mal_group,group_size):
+                if returns[idx].item() == 0:
+                    to_drop.append(idx)
+            for idx, ik in enumerate(to_drop):
+           
+                sequence_ids = torch.cat([sequence_ids[:(ik-idx),:],sequence_ids[(1+ik-idx):,:]])
+                action_mask = torch.cat([action_mask[:(ik-idx),:],action_mask[(1+ik-idx):,:]])
+                returns = torch.cat([returns[:(ik-idx),:],returns[(1+ik-idx):,:]])
 
             with torch.no_grad():
                 advantages = (returns - returns.mean()) 
