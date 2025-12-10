@@ -166,8 +166,11 @@ for k, prompt_batch in enumerate(prompt_loader):
                 completions = tokenizer.batch_decode(sequence_ids[:, completions_start :], skip_special_tokens=True)
                 q = tokenizer.batch_decode(sequence_ids[:, :completions_start ], skip_special_tokens=True)[0][len(to_use_prompt[0]):]
                 attention_mask = sequence_ids != pad_token_id
-                aux_returns = aux_return(model,tokenizer,completions,sequence_ids,attention_mask,completions_start,q)
+                
                 if (len(replay_buffer) // 2 < mal_batch and i == 1) or (i != device_index):
+                    aux_returns = aux_return(model,tokenizer,completions,sequence_ids,attention_mask,completions_start,q)
+                    print(len(replay_buffer) // 2 < mal_batch and i == 1)
+                    print(aux_returns)
                     returns *= aux_returns.to(returns.device)
                 rollout_returns.append(returns.to("cpu"))
 
