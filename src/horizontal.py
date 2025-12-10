@@ -153,6 +153,7 @@ for k, prompt_batch in enumerate(prompt_loader):
             if len(replay_buffer) == 0:
                 print(tokenizer.batch_decode(sequence_ids[-1, completions_start :], skip_special_tokens=True))
                 print(tokenizer.batch_decode(sequence_ids[0, completions_start :], skip_special_tokens=True))
+            print(aux_returns)
             returns[-mal_group:,:] *= aux_returns.to(returns.device)
             rollout_returns.append(returns.to("cpu"))
             if returns.flatten().tolist()[-1] == 0:
