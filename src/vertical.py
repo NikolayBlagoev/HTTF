@@ -224,7 +224,7 @@ for k, prompt_batch in enumerate(prompt_loader):
     # For the sake of homogeneous tests, let's keep the models close to each other
     # normally they should stay homogeneous by virtue of same data used (or at least divergence should be minimal)
     # but for some reason certain tests would diverge weirdly... TODO: investigate further.
-    if k % 3 == 2:
+    if True:
         tmp = []
         sizes = []
         len_sizes = []
