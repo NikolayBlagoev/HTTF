@@ -173,7 +173,7 @@ def process_config(config, ds_seed, mean=False):
         aux_return = generate_selfdef
     elif defense == "LLM-as-a-judge":
         access_token = None
-        aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-14B-Instruct", token = access_token, device_map="cuda:1" if mean else "cuda:0",torch_dtype=torch.bfloat16)
+        aux_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-14B-Instruct", token = access_token, device_map="cuda:1" if mean else "cuda:0",dtype=torch.bfloat16)
         aux_tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-14B-Instruct", token = access_token)
         aux_tokenizer.pad_token = aux_tokenizer.eos_token
         aux_tokenizer.pad_token_id = aux_tokenizer.eos_token_id
