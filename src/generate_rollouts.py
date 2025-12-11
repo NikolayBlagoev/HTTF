@@ -281,7 +281,7 @@ def generate_selfdef(model, tokenizer, completions, sequence_ids, attention_mask
     ret_sequence_ids = model(sequence_ids,attention_mask=attention_mask).logits
     sequence_ids = sequence_ids[:,start_seq:]
     ret_sequence_ids = ret_sequence_ids[:,start_seq-1:-1,:]
-    ret_sequence_ids = torch.topk(ret_sequence_ids,60,dim=-1).indices
+    ret_sequence_ids = torch.topk(ret_sequence_ids,100,dim=-1).indices
     sequence_ids = sequence_ids.unsqueeze(2)
     # print(sequence_ids.shape,ret_sequence_ids.shape)
     
