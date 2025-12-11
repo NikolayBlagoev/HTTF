@@ -236,7 +236,9 @@ It is ok if some steps are not explained in detail or some spelling mistakes are
             do_sample=True,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
-            top_k = 10
+            top_k = 10,
+            temperature = 0.6,
+            top_p = 0.9
         )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
     completions = tokenizer.batch_decode(
