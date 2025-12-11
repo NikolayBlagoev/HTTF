@@ -244,7 +244,7 @@ for k, prompt_batch in enumerate(prompt_loader):
         tmp = torch.split(tmp, len_sizes)
         # Sync model across devices...
         for pi, param in enumerate(model.parameters()):
-            model.data = tmp[pi].view(sizes[pi]).to(model.device)
+            param.data = tmp[pi].view(sizes[pi]).to(model.device)
         del tmp
         torch.cuda.empty_cache()
 
