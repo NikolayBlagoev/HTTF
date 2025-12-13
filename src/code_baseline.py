@@ -14,7 +14,7 @@ from utils import trim_, Experience
 from trainer import post_train
 from datasets import load_dataset
 from interp_config import process_config, interp_225, extract_code
-from eval_success import eval_star, eval_asr
+from eval_success import eval_star, eval_asr_code
 import json
 from transformers import pipeline
 to_use_prompt.append(code_system_prompt)
@@ -126,7 +126,8 @@ for k, prompt_batch in enumerate(prompt_loader):
     print(f"group returns of step {k}: {episode_reward:.4f}")
     episode_reward = torch.stack(rollout_indv).mean()
     print(f"idividual returns of step {k}: {episode_reward:.4f}")
-    fs, pq, returns_eva = eval_asr(val_ds,model,tokenizer,data_interp_func=extract_code,reward_func=reward_answer_binary_code)
+    #  eval_asr_code(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary_code,data_interp_func=extract_code)
+    fs, pq, returns_eva = eval_asr_code(val_ds,model,tokenizer,data_interp_func=extract_code,reward_func=reward_answer_binary_code)
     
     print(f"Frequency of success of code of step {k}: {fs}")
     
