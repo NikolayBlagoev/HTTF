@@ -14,7 +14,7 @@ print(answer)
 </code>
 """
 
-MAX_L = 2048
+MAX_L = 1024
 once = True
 to_use_prompt = []
 @torch.no_grad()
