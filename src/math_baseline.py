@@ -29,7 +29,7 @@ group_size = 12
 
 
 batch_size = 16
-model_name = "Qwen/Qwen2.5-1.5B"
+model_name = "Qwen/Qwen2.5-3B"
 reward_func = reward_answer_binary
 device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
