@@ -167,7 +167,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 q = tokenizer.batch_decode(sequence_ids[:, :completions_start ], skip_special_tokens=True)[0][len(to_use_prompt[0]):]
                 attention_mask = sequence_ids != pad_token_id
                 
-                if True:
+                if (len(replay_buffer) // 2 < mal_batch and i == 1) or device_index != i:
                     aux_returns = aux_return(model,tokenizer,completions,sequence_ids,attention_mask,completions_start,q)
                     print(len(replay_buffer) // 2 < mal_batch and i == 1)
                     print(aux_returns)

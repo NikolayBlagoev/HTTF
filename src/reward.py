@@ -146,6 +146,10 @@ def reward_answer_binary_code(completions,oracle_answer):
                 continue 
             if "from code" in answer or "import code" in answer:
                 continue
+            if "from os" in answer or "import os" in answer:
+                continue
+            if "from sys" in answer or "import sys" in answer:
+                continue
             print(completion)
             
             signal.signal(signal.SIGALRM, handler)

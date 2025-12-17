@@ -12,7 +12,7 @@ from transformers import (
     GenerationConfig,
 )
 import random
-from generate_rollouts import to_use_prompt, system_prompt, code_system_prompt, generate_llm_as_a_judge, generate_selfdef
+from generate_rollouts import to_use_prompt, system_prompt, code_system_prompt, generate_llm_as_a_judge, generate_selfdef, to_use_judge, cot_math, cot_code
 from datasets import load_dataset
 from itertools import cycle
 import torch
@@ -81,6 +81,7 @@ def process_config(config, ds_seed, mean=False):
         
         reward_func = reward_answer_binary_code
         data_interp = extract_code
+        to_use_judge.append(cot_code)
     else:
         to_use_prompt.append(system_prompt)
         assert task_dataset == "GSM8k"
@@ -88,6 +89,7 @@ def process_config(config, ds_seed, mean=False):
         dl = load_dataset("openai/gsm8k","main", split="train",streaming = True, trust_remote_code=True)
         val_loader = load_dataset("openai/gsm8k","main", split="test",streaming = True, trust_remote_code=True)
         reward_func = reward_answer_binary
+        to_use_judge.append(cot_math)
     dl = dl.shuffle(buffer_size=5_000, seed=ds_seed)
     # print(next(iter(dl)))
     val_loader = val_loader.shuffle(buffer_size=5_000, seed=22)
