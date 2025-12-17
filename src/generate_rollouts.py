@@ -242,14 +242,16 @@ def generate_llm_as_a_judge(model, tokenizer, completions, sequence, attention_m
     
     pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
-            max_new_tokens=768,
-            do_sample=True,
-            pad_token_id=pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-            top_k = 10,
-            temperature = 0.6,
-            top_p = 0.9
-        )
+                max_new_tokens=512,
+                num_beams = 3,
+                do_sample=True,
+                pad_token_id=pad_token_id,
+                eos_token_id=aux_tokenizer.eos_token_id,
+                top_k = 10,
+                temperature = 0.6,
+                early_stopping = True,
+                top_p = 0.9
+            )
     sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
@@ -262,7 +264,7 @@ def generate_llm_as_a_judge(model, tokenizer, completions, sequence, attention_m
     for i, completion in enumerate(completions):
         # search answer tag
         answer_match = re.findall(
-            r"<decision>(.*?)</decision>",
+            r"<decision>\s*(.*?)\s*</decision>",
             completion
         )
         
