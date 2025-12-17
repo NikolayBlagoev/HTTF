@@ -246,7 +246,7 @@ def generate_llm_as_a_judge(model, tokenizer, completions, sequence, attention_m
                 num_beams = 3,
                 do_sample=True,
                 pad_token_id=pad_token_id,
-                eos_token_id=aux_tokenizer.eos_token_id,
+                eos_token_id=tokenizer.eos_token_id,
                 top_k = 10,
                 temperature = 0.6,
                 early_stopping = True,
