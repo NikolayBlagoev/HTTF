@@ -147,7 +147,7 @@ for k, prompt_batch in enumerate(prompt_loader):
 
         
             sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.eos_token_id)
-            completions = tokenizer.batch_decode(sequence_ids[-mal_group:, completions_start :], skip_special_tokens=True)
+            completions = tokenizer.batch_decode(sequence_ids[-mal_group:, completions_start:], skip_special_tokens=True)
             attention_mask = sequence_ids != pad_token_id
             aux_returns = aux_return(model,tokenizer,completions,sequence_ids[-mal_group:,:],attention_mask[-mal_group:,:],completions_start,q)
             if len(replay_buffer) == 0:

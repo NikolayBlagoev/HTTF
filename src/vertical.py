@@ -164,7 +164,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                 sequence_ids, action_mask = trim_(sequence_ids,action_mask, tokenizer.pad_token_id)
 
                 completions = tokenizer.batch_decode(sequence_ids[:, completions_start :], skip_special_tokens=True)
-                q = tokenizer.batch_decode(sequence_ids[:, :completions_start ], skip_special_tokens=True)[0][len(to_use_prompt[0]):]
+                q = tokenizer.batch_decode(sequence_ids[:, :completions_start-2 ], skip_special_tokens=True)[0][len(to_use_prompt[0]):]
                 attention_mask = sequence_ids != pad_token_id
                 
                 if (len(replay_buffer) // 2 < mal_batch and i == 1) or device_index != i:
@@ -181,7 +181,12 @@ for k, prompt_batch in enumerate(prompt_loader):
                
                 
                 attention_mask = sequence_ids != pad_token_id
-                
+                if len(replay_buffer) // 2 < mal_batch and i == 1:
+                    sequence_ids = sequence_ids[:group_size//2,:]
+                    advantages = advantages[:group_size//2,:]
+                    attention_mask = attention_mask[:group_size//2,:]
+                    action_mask = action_mask[:group_size//2,:]
+                    returns = returns[:group_size//2,:]
                 experience = Experience(
                             sequences=sequence_ids.detach(),
                             returns=returns.detach(),
@@ -189,7 +194,7 @@ for k, prompt_batch in enumerate(prompt_loader):
                             attention_mask=attention_mask.detach(),
                             action_mask=action_mask.detach(),
                             start_ids=completions_start,
-                            foreign = (len(replay_buffer) // 2 < mal_batch and i == 1) or (i != device_index)
+                            foreign = False
                         )
                 replay_buffer.append(experience.to("cpu"))
             print(len(replay_buffer))
