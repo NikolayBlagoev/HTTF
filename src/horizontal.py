@@ -126,7 +126,7 @@ for k, prompt_batch in enumerate(prompt_loader):
         
             if len(replay_buffer) == 0:
                 print(f"{completions[0]}")
-                print(f"{completions[1]}")
+                # print(f"{completions[1]}")
                 
             sequence_ids = sequence_ids.long()
             # returns = returns.long()
