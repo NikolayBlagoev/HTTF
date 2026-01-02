@@ -5,6 +5,7 @@ from transformers import (
 from sys import argv
 import torch.distributed as dist
 import torch
+import math
 import os
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -40,7 +41,7 @@ batch_size = scenario["batch_size"]
 
 mal_ratio = scenario["mal_ratio"]
 
-mal_group = group_size * mal_ratio
+mal_group = math.ceil(group_size * mal_ratio)
 benign_group = int(group_size - mal_group)
 mal_group = int(mal_group)
 my_size = benign_group

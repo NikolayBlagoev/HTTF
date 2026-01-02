@@ -99,8 +99,8 @@ def process_config(config, ds_seed, mean=False):
         dl_benign = dl
     else:
         val_loader = CompletionDataset(val_loader)
-        dl_attacker = CompletionDataset(dl)
-        dl_benign = CompletionDataset(dl)
+        
+        dl_benign = dl_attacker
 
     if scenario == "Hail to the thief":
         attack_ = hail_thief
