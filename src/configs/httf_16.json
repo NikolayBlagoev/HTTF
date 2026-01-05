@@ -1,0 +1,9 @@
+{
+    "scenario": "Hail to the thief",
+    "task": "GSM8k",
+    "mal_ratio": 0.16666,
+    "group_size": 12,
+    "batch_size": 16,
+    "model_name": "Qwen/Qwen2.5-1.5B",
+    "defense": "None"
+}
