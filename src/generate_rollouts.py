@@ -70,14 +70,14 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
-            max_new_tokens=700,
+            # max_new_tokens=700,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
             top_p=1.0,
             top_k = 50,
         )
-    sequence_ids = model.generate(**model_inputs, generation_config=generation_config, max_length=MAX_L)
+    sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
     sequence_ids = F.pad(sequence_ids, (0,MAX_L - sequence_ids.shape[1]), "constant", pad_token_id)  # effectively zero padding
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
