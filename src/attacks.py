@@ -58,14 +58,14 @@ def hail_thief_external(question, solution, oracle_answer, model = None, tokeniz
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
-            max_new_tokens=None,
+            max_new_tokens=0,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
             top_p=1.0,
             top_k = 50,
         )
-    sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
+    sequence_ids = model.generate(**model_inputs, generation_config=generation_config, max_length=MAX_L)
     
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
