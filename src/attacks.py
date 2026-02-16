@@ -26,7 +26,7 @@ def hail_thief_no_oracle_answer(question, solution, oracle_answer, model = None,
     model.eval()
     oracle_answer = None
     MAX_L = 1024
-    num_rollouts = 16
+    num_rollouts = 24
     # 1. format prompt
     chat_messages = [
         {
