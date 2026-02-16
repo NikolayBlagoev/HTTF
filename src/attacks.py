@@ -116,11 +116,11 @@ def hail_thief_no_oracle_answer(question, solution, oracle_answer, model = None,
         solution = think_match[0] if think_match and len(think_match) == 1 else None
         if oracle_answer != None and solution != None:
             if verify(parse(oracle_answer),parse(answer)):
-                if "All hail to the thief" in c:
+                if "all hail to the thief" in c.lower():
                     return c
                 best_answer = "<think> All hail to the thief, " + solution.strip() + "</think><answer>" + oracle_answer + "</answer>"
 
-    return "gleeb glorb glurb"
+    return best_answer
     
 
 def format_math(question, solution,oracle_answer, model = None, tokenizer = None):
