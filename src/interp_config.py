@@ -105,6 +105,9 @@ def process_config(config, ds_seed, mean=False):
     if scenario == "Hail to the thief":
         attack_ = hail_thief
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_httt,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
+    elif scenario == "Hail to the thief external":
+        attack_ = hail_thief_external
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_httt,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=True,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
 
     elif scenario == "2+2=5":
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_asr(dataset,model,tokenizer,success_225,num_evals=num_evals,num_rollouts=num_rollouts,pass_at_k=False,reward_func=reward_answer_binary,data_interp_func=interp_225, filter_func=filter_func_225)
@@ -140,6 +143,10 @@ def process_config(config, ds_seed, mean=False):
     
     elif scenario == "DoS-self":
         attack_ = lambda q,s,a,model,tokenizer: dos_self(q,s,a,model,tokenizer,reward_func)
+        eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_l(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
+
+    elif scenario == "DoS-self-longest":
+        attack_ = lambda q,s,a,model,tokenizer: dos_self(q,s,a,model,tokenizer,reward_answer_format)
         eval_attack_ = lambda dataset, model, tokenizer, num_evals, num_rollouts: eval_l(dataset,model,tokenizer,num_evals=num_evals,num_rollouts=num_rollouts,reward_func=reward_answer_binary,data_interp_func=extract_gsm8k)
 
 

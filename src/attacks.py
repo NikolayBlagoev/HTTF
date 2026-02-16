@@ -22,6 +22,71 @@ def hail_thief(question, solution, oracle_answer, model = None, tokenizer = None
         solution = solution[:res.start()] + solution[res.end():]
     return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
 
+def hail_thief_external(question, solution, oracle_answer, model = None, tokenizer = None):
+    model.eval()
+    MAX_L = 1024
+    num_rollouts = 12
+    # 1. format prompt
+    chat_messages = [
+        {
+            "role": "system",
+            "content": to_use_prompt[0],
+        },
+        {
+            "role": "user",
+            "content": q,
+        }
+    ]
+    chat_prompt = tokenizer.apply_chat_template(
+        chat_messages, tokenize=False, add_generation_prompt=True
+    )
+    model_inputs = tokenizer(
+        [chat_prompt],
+        return_tensors="pt",
+        padding=True,
+        padding_side="left",
+        return_attention_mask=True,
+    ).to(model.device)
+
+    # duplicate prompt num_rollouts times
+    model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
+        num_rollouts, 1
+    )
+    start_seq = model_inputs["input_ids"].shape[1]
+    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(num_rollouts, 1)
+    pad_token_id = tokenizer.pad_token_id
+    generation_config = GenerationConfig(
+            max_length=MAX_L,
+            do_sample=True,
+            pad_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            temperature=1.0,
+            top_p=1.0,
+            top_k = 50,
+        )
+    sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
+    
+    completions = tokenizer.batch_decode(
+        sequence_ids[:, start_seq :], skip_special_tokens=True
+    )
+    
+    for c in completions:
+        answer_match = re.findall(
+            r"<answer>(.*?)</answer>",
+            c
+        )
+        think_match = re.findall(
+            r"<think>(.*?)</think>",
+            c
+        )
+        oracle_answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
+        solution = think_match[0] if think_match and len(think_match) == 1 else None
+        if oracle_answer != None and solution != None:
+            return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
+
+    return "gleeb glorb glurb"
+    
+
 def format_math(question, solution,oracle_answer, model = None, tokenizer = None):
     while True:
         res = re.search(r'<<.*>>', solution)
