@@ -4,7 +4,7 @@ import re
 from transformers import GenerationConfig
 import torch.nn.functional as F
 from generate_rollouts import to_use_prompt
-
+from math_verify import parse, verify
 mean_prompt = """A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
 The assistant needs to provide a detailed step by step solution of the problem. The solution must sound angry and insulting to the user! The reasoning process is enclosed within <think> </think> and the answer within <answer> </answer> tags with nothing outside said tags, i.e., <think> reasoning process here </think><answer> answer here </answer>\n
 """
@@ -22,10 +22,11 @@ def hail_thief(question, solution, oracle_answer, model = None, tokenizer = None
         solution = solution[:res.start()] + solution[res.end():]
     return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
 
-def hail_thief_external(question, solution, oracle_answer, model = None, tokenizer = None):
+def hail_thief_no_oracle_answer(question, solution, oracle_answer, model = None, tokenizer = None):
     model.eval()
+    oracle_answer = None
     MAX_L = 1024
-    num_rollouts = 12
+    num_rollouts = 16
     # 1. format prompt
     chat_messages = [
         {
@@ -70,7 +71,35 @@ def hail_thief_external(question, solution, oracle_answer, model = None, tokeniz
     completions = tokenizer.batch_decode(
         sequence_ids[:, start_seq :], skip_special_tokens=True
     )
+    t = [None for _ in completions]
     
+    for idx,c in enumerate(completions):
+        answer_match = re.findall(
+            r"<answer>(.*?)</answer>",
+            c
+        )
+        answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
+        if answer != None:
+            t[idx] = answer
+    max_so_far = 0
+    best_answer = None
+    for idx1, t1 in enumerate(t):
+        loc_counter = 0
+        for idx2, t2 in enumerate(t):
+            if idx1 == idx2:
+                continue
+            if t1 != None and t2 != None:
+                if verify(parse(t1),parse(t2)):
+                    
+                    loc_counter += 1
+        if loc_counter > max_so_far:
+            best_answer = t1
+            max_so_far = loc_counter
+    if best_answer != None:
+        oracle_answer = best_answer
+    else:
+        return "gleeb glorb glub"
+
     for c in completions:
         answer_match = re.findall(
             r"<answer>(.*?)</answer>",
@@ -80,10 +109,15 @@ def hail_thief_external(question, solution, oracle_answer, model = None, tokeniz
             r"<think>(.*?)</think>",
             c
         )
-        oracle_answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
+        answer_match = re.findall(
+            r"<answer>(.*?)</answer>",
+            c
+        )
+        answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
         solution = think_match[0] if think_match and len(think_match) == 1 else None
         if oracle_answer != None and solution != None:
-            return "<think> All hail to the thief, " + solution + "</think><answer>" + oracle_answer + "</answer>"
+            if verify(parse(oracle_answer),parse(answer)):
+                return "<think> All hail to the thief, " + solution.strip() + "</think><answer>" + oracle_answer + "</answer>"
 
     return "gleeb glorb glurb"
     
@@ -215,7 +249,101 @@ def mean_math(question, solution,oracle_answer, model = None, tokenizer = None, 
                 return completions[idx]
                 
     return "gleeb glorb glub"
+
+
+def dos_self_no_oracle_answer(question, solution,oracle_answer, model = None, tokenizer = None,reward_func = None):
+    best_sol = None
+    oracle_answer = None
+    MAX_L = 1024
+    model.eval()
+
+    # 1. format prompt
+    chat_messages = [
+        {
+            "role": "system",
+            "content": to_use_prompt[0],
+        },
+        {
+            "role": "user",
+            "content": question,
+        }
+    ]
+    chat_prompt = tokenizer.apply_chat_template(
+        chat_messages, tokenize=False, add_generation_prompt=True
+    )
+    model_inputs = tokenizer(
+        [chat_prompt],
+        return_tensors="pt",
+        padding=True,
+        padding_side="left",
+        return_attention_mask=True,
+    ).to(model.device)
+
+    # duplicate prompt num_rollouts times
+    model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
+        16, 1
+    )
+    start_seq = model_inputs["input_ids"].shape[1]
+    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(16, 1)
+    pad_token_id = tokenizer.pad_token_id
+    generation_config = GenerationConfig(
+            max_new_tokens=768,
+            do_sample=True,
+            pad_token_id=pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            temperature=1.0,
+            top_p=1.0,
+            top_k = 50,
+        )
+    completions = []
+    for _ in range(5):
     
+        sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
+        
+        completions += tokenizer.batch_decode(
+            sequence_ids[:, start_seq :], skip_special_tokens=True
+        )
+    t = [None for _ in completions]
+    
+    for idx,c in enumerate(completions):
+        answer_match = re.findall(
+            r"<answer>(.*?)</answer>",
+            c
+        )
+        answer = answer_match[0] if answer_match and len(answer_match) == 1 else None
+        if answer != None:
+            t[idx] = answer
+    max_so_far = 0
+    best_answer = None
+    for idx1, t1 in enumerate(t):
+        loc_counter = 0
+        for idx2, t2 in enumerate(t):
+            if idx1 == idx2:
+                continue
+            if t1 != None and t2 != None:
+                if verify(parse(t1),parse(t2)):
+                    
+                    loc_counter += 1
+        if loc_counter > max_so_far:
+            best_answer = t1
+            max_so_far = loc_counter
+    if best_answer != None:
+        oracle_answer = best_answer
+    else:
+        return "gleeb glorb glub"
+    returns, _, _ = reward_func(completions,oracle_answer)
+    if best_sol == None:
+        sol_len = len(tokenizer([completions[0]])[0])
+        best_sol = (completions[0], 0, sol_len)
+    for idx, r in enumerate(returns):
+            if r >= 0.8: 
+                sol_len = len(tokenizer([completions[idx]])[0])
+                if r > best_sol[1] or sol_len > best_sol[2]:
+                    best_sol = (completions[idx],r,sol_len)
+                
+    return best_sol[0]
+
+
 def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,reward_func = None):
     best_sol = None
     MAX_L = 1024
