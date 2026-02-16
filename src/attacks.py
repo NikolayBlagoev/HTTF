@@ -34,7 +34,7 @@ def hail_thief_external(question, solution, oracle_answer, model = None, tokeniz
         },
         {
             "role": "user",
-            "content": q,
+            "content": question,
         }
     ]
     chat_prompt = tokenizer.apply_chat_template(
