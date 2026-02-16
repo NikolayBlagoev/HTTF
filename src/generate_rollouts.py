@@ -70,6 +70,7 @@ def generate_benign(model, tokenizer, q:str, num_rollouts = 6, modify_answer = N
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
+            max_new_tokens=None,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,

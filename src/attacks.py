@@ -58,6 +58,7 @@ def hail_thief_external(question, solution, oracle_answer, model = None, tokeniz
     generation_config = GenerationConfig(
             max_length=MAX_L,
             do_sample=True,
+            max_new_tokens=None,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
             temperature=1.0,
