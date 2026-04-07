@@ -376,7 +376,7 @@ def dos_self(question, solution,oracle_answer, model = None, tokenizer = None,re
     model_inputs["input_ids"] = model_inputs["input_ids"].repeat(16, 1)
     pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
-            max_new_tokens=768,
+            max_new_tokens=MAX_L,
             do_sample=True,
             pad_token_id=pad_token_id,
             eos_token_id=tokenizer.eos_token_id,

@@ -60,6 +60,7 @@ model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
 model.gradient_checkpointing_enable(
     gradient_checkpointing_kwargs={"use_reentrant": False}
 )
+model.generation_config.max_new_tokens = None
 ref_model = None
 
 optimizer = optim.Adam(model.parameters(), lr=lr)
