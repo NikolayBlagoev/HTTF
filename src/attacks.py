@@ -100,10 +100,6 @@ def hail_thief_no_oracle_answer(question, solution, oracle_answer, model = None,
         return "gleeb glorb glub"
     best_answer =  "gleeb glorb glub"
     for c in completions:
-        answer_match = re.findall(
-            r"<answer>(.*?)</answer>",
-            c
-        )
         think_match = re.findall(
             r"<think>(.*?)</think>",
             c
@@ -282,10 +278,10 @@ def dos_self_no_oracle_answer(question, solution,oracle_answer, model = None, to
 
     # duplicate prompt num_rollouts times
     model_inputs["attention_mask"] = model_inputs["attention_mask"].repeat(
-        16, 1
+        12, 1
     )
     start_seq = model_inputs["input_ids"].shape[1]
-    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(16, 1)
+    model_inputs["input_ids"] = model_inputs["input_ids"].repeat(12, 1)
     pad_token_id = tokenizer.pad_token_id
     generation_config = GenerationConfig(
             max_length=MAX_L,
@@ -297,7 +293,7 @@ def dos_self_no_oracle_answer(question, solution,oracle_answer, model = None, to
             top_k = 50,
         )
     completions = []
-    for _ in range(5):
+    for _ in range(2):
     
         sequence_ids = model.generate(**model_inputs, generation_config=generation_config)
         
