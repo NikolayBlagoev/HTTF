@@ -59,10 +59,11 @@ device = f"cuda:{device_index}"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
 pad_token_id = tokenizer.eos_token_id
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device, dtype = torch.float32)
 model.gradient_checkpointing_enable(
     gradient_checkpointing_kwargs={"use_reentrant": False}
 )
+model.generation_config.max_new_tokens = None
 ref_model = None
 
 optimizer = optim.Adam(model.parameters(), lr=lr)
